@@ -8,16 +8,13 @@ namespace PluginInterface
     {
         public string Name;
         public Token[] Tokens;
+        public string Response;
 
         public Token GetParameter(string paramName, IEnumerable<Token> tokens)
         {
             for (var i = 0; i < Tokens.Length; i++)
-            {
-                if (Tokens[i].Value == paramName)
-                {
+                if (Tokens[i].Value.Contains(paramName))
                     return tokens.ElementAt(i);
-                }
-            }
 
             return null;
         }
@@ -27,12 +24,19 @@ namespace PluginInterface
             var sb = new StringBuilder();
 
             if (Tokens != null && Tokens.Length > 0)
-            {
                 foreach (var token in Tokens)
-                {
-                    sb.Append(token.Value + " ");
-                }
-            }
+                    if (token.Value.Length == 1)
+                    {
+                        sb.Append($"{token.Value[0]} ");
+                    }
+                    else
+                    {
+                        sb.Append("[");
+
+                        foreach (var word in token.Value) sb.Append($"{word},");
+
+                        sb.Append("] ");
+                    }
 
             return sb.ToString().Trim();
         }
@@ -40,9 +44,9 @@ namespace PluginInterface
 
     public class Token
     {
-        public string Value;
+        public string[] Value;
         public TokenType Type = TokenType.Unknown;
-        public int successRate = 100; // success rato for fuzzy compare
+        public int SuccessRate = 100; // success rato for fuzzy compare
     }
 
     public class ProcessingCommand

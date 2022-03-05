@@ -1,32 +1,31 @@
-﻿using PluginInterface;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using PluginInterface;
 
 namespace HelloPlugin
 {
-    public class HelloPlugin : PluginBase, IPluginInterface
+    public class HelloPlugin : PluginBase
     {
-        public string PluginName { get; } = "HelloPlugin";
-        private const string _pluginConfigFile = "HelloPluginSettings.json";
-        public PluginCommand[] Commands { get; set; }
-
-        public HelloPlugin(IAudioOutSingleton audioOut) : base(audioOut)
+        public HelloPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
         {
-            var configBuilder = new Config<HelloPluginSettings>(_pluginConfigFile);
-            if (!File.Exists(_pluginConfigFile))
-            {
-                configBuilder.SaveConfig();
-            }
+            var configBuilder = new Config<HelloPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
 
-            Commands = configBuilder.ConfigStorage.Commands;
+            if (!File.Exists($"{PluginPath}\\{PluginConfigFile}")) configBuilder.SaveConfig();
+
+            _commands = configBuilder.ConfigStorage.Commands;
         }
 
-        public string Execute(string commandName, IEnumerable<Token> commandTokens)
+        public override string Execute(string commandName, List<Token> commandTokens)
         {
-            _audioOut.Speak("И тебе привет");
+            var command = Commands.FirstOrDefault(n => n.Name == commandName);
 
-            return "И тебе привет";
+            if (command == null)
+                return string.Empty;
+
+            AudioOut.Speak(command.Response);
+
+            return command.Response;
         }
     }
 }

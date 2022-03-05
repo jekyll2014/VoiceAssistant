@@ -1,85 +1,83 @@
-﻿using PluginInterface;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Timers;
 
+using PluginInterface;
+
 namespace TimerPlugin
 {
-    class TimerPlugin : PluginBase, IPluginInterface
+    public class TimerPlugin : PluginBase
     {
-        public string PluginName { get; } = "TimerPlugin";
-        private string _pluginConfigFile = "TestPluginSettings.json";
-        private string _alarmSound = "TestPluginSettings.json";
-        public PluginCommand[] Commands { get; set; }
-        List<Timer> timers = new List<Timer>();
+        private readonly string _alarmSound;
+        private List<Timer> _timers = new List<Timer>();
 
-        public TimerPlugin(IAudioOutSingleton audioOut) : base(audioOut)
+        public TimerPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
         {
-            var configBuilder = new Config<TimerPluginSettings>(_pluginConfigFile);
-            if (!File.Exists(_pluginConfigFile))
-            {
-                configBuilder.SaveConfig();
-            }
+            var configBuilder = new Config<TimerPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
 
-            Commands = configBuilder.ConfigStorage.Commands;
+            if (!File.Exists($"{PluginPath}\\{PluginConfigFile}")) configBuilder.SaveConfig();
+
+            _commands = configBuilder.ConfigStorage.Commands;
             _alarmSound = configBuilder.ConfigStorage.AlarmSound;
         }
 
-        public string Execute(string commandName, IEnumerable<Token> commandTokens)
+        public override string Execute(string commandName, List<Token> commandTokens)
         {
             var command = Commands.FirstOrDefault(n => n.Name == commandName);
 
+            var paramValue = string.Empty;
+
+            if (command == null)
+                return paramValue;
+
             if (commandName.StartsWith("stop", StringComparison.OrdinalIgnoreCase))
             {
-                foreach (var t in timers)
-                {
-                    t.Stop();
-                }
-                timers = new List<Timer>();
+                foreach (var t in _timers) t.Stop();
+                _timers = new List<Timer>();
 
-                _audioOut.Speak("Все таймеры остановлены");
-
-                return "";
+                paramValue = command.Response;
             }
             else
             {
                 var minToken = command.GetParameter("%minutes%", commandTokens);
                 var secToken = command.GetParameter("%seconds%", commandTokens);
-                var minCount = TextToNumberRus.GetNumber(minToken.Value, minToken.successRate);
-                var secCount = TextToNumberRus.GetNumber(secToken.Value, secToken.successRate);
+                var minCount = 0;
+
+                if (minToken != null)
+                    minCount = TextToNumberRus.GetNumber(minToken.Value[0], minToken.SuccessRate);
+
+                var secCount = 0;
+                if (secToken != null)
+                    secCount = TextToNumberRus.GetNumber(secToken.Value[0], secToken.SuccessRate);
 
                 if (minCount + secCount == 0)
                 {
-                    return "Некорректное время";
+                    paramValue = "Некорректное время";
                 }
-
-                var t = new Timer()
+                else
                 {
-                    AutoReset = false,
-                    Interval = new TimeSpan(0, minCount, secCount).TotalMilliseconds,
-                };
-                t.Elapsed += new ElapsedEventHandler((obj, args) =>
-                {
-                    _audioOut.PlayFile(_alarmSound);
-                });
+                    var t = new Timer
+                    {
+                        AutoReset = false,
+                        Interval = new TimeSpan(0, minCount, secCount).TotalMilliseconds
+                    };
 
-                timers.Add(t);
-                t.Start();
+                    t.Elapsed += (obj, args) => { AudioOut.PlayFile($"{PluginPath}\\{_alarmSound}"); };
 
-                var paramValue = "";
-                if (minCount > 0)
-                    paramValue = NumberToTextRus.Str(minCount) + "минут ";
+                    _timers.Add(t);
+                    t.Start();
 
-                if (secCount > 0)
-                    paramValue += NumberToTextRus.Str(secCount) + "секунд";
-
-                _audioOut.Speak($"Таймер заведен на {paramValue}");
-
-                return "";
+                    // string.Empty is used to avoid using {0} int templates
+                    paramValue = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
+                        NumberToTextRus.Str(secCount));
+                }
             }
+
+            AudioOut.Speak(paramValue);
+
+            return paramValue;
         }
     }
 }

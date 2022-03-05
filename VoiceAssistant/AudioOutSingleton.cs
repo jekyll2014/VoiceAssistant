@@ -2,7 +2,6 @@
 
 using PluginInterface;
 
-using System;
 using System.Globalization;
 using System.IO;
 using System.Speech.AudioFormat;
@@ -13,15 +12,16 @@ namespace VoiceAssistant
 {
     public class AudioOutSingleton : IAudioOutSingleton
     {
-        private static AudioOutSingleton instance;
-        private static object syncRoot = new Object();
-        private static SpeechSynthesizer _synthesizer;
-        private static PromptBuilder _promptBuilder;
-        private static WaveOut _waveOut;
-        private static int _sampleRate;
-        private static string _speakerLanguage;
+        private static AudioOutSingleton _instance;
+        private static readonly object SyncRoot = new object();
+        private readonly SpeechSynthesizer _synthesizer;
+        private readonly PromptBuilder _promptBuilder;
+        private readonly WaveOut _waveOut;
+        private readonly int _sampleRate;
+        private readonly string _speakerLanguage;
 
-        protected AudioOutSingleton(string speakerLanguage, SpeechSynthesizer synthesizer, PromptBuilder promptBuilder, WaveOut waveOut, int sampleRate)
+        protected AudioOutSingleton(string speakerLanguage, SpeechSynthesizer synthesizer, PromptBuilder promptBuilder,
+            WaveOut waveOut, int sampleRate)
         {
             _speakerLanguage = speakerLanguage;
             _synthesizer = synthesizer;
@@ -30,69 +30,71 @@ namespace VoiceAssistant
             _sampleRate = sampleRate;
         }
 
-        public static AudioOutSingleton GetInstance(string speakerLanguage, SpeechSynthesizer synthesizer, PromptBuilder promptBuilder, WaveOut waveOut, int sampleRate)
+        public static AudioOutSingleton GetInstance(string speakerLanguage, SpeechSynthesizer synthesizer,
+            PromptBuilder promptBuilder, WaveOut waveOut, int sampleRate)
         {
-            if (instance == null)
+            if (_instance != null)
+                return _instance;
+
+            lock (SyncRoot)
             {
-                lock (syncRoot)
-                {
-                    if (instance == null)
-                        instance = new AudioOutSingleton(speakerLanguage, synthesizer, promptBuilder, waveOut, sampleRate);
-                }
+                _instance ??= new AudioOutSingleton(speakerLanguage, synthesizer, promptBuilder, waveOut,
+                    sampleRate);
             }
 
-            return instance;
+            return _instance;
         }
 
         public void Speak(string text, bool exclusive = true)
         {
-            if (instance != null)
+            if (_instance == null)
+                return;
+
+            lock (SyncRoot)
             {
-                lock (syncRoot)
+                var speechStream = new MemoryStream();
+                var rs = new RawSourceWaveStream(speechStream, new WaveFormat(_sampleRate, 2));
+                _synthesizer.SetOutputToAudioStream(speechStream,
+                    new SpeechAudioFormatInfo(_sampleRate, AudioBitsPerSample.Sixteen, AudioChannel.Stereo));
+
+                _promptBuilder.StartVoice(new CultureInfo(_speakerLanguage));
+                _promptBuilder.AppendText(text);
+                _promptBuilder.EndVoice();
+                _synthesizer.Speak(_promptBuilder);
+                _promptBuilder.ClearContent();
+
+                rs.Position = 0;
+                _waveOut.Init(rs);
+                _waveOut.Play();
+
+                if (!exclusive)
+                    return;
+
+                while (_waveOut.PlaybackState == PlaybackState.Playing)
                 {
-                    var speechStream = new MemoryStream();
-                    var rs = new RawSourceWaveStream(speechStream, new WaveFormat(_sampleRate, 2));
-                    _synthesizer.SetOutputToAudioStream(speechStream, new SpeechAudioFormatInfo(_sampleRate, AudioBitsPerSample.Sixteen, AudioChannel.Stereo));
-
-                    _promptBuilder.StartVoice(new CultureInfo(_speakerLanguage));
-                    _promptBuilder.AppendText(text);
-                    _promptBuilder.EndVoice();
-                    _synthesizer.Speak(_promptBuilder);
-                    _promptBuilder.ClearContent();
-
-                    rs.Position = 0;
-                    _waveOut.Init(rs);
-                    _waveOut.Play();
-
-                    if (exclusive)
-                    {
-                        while (_waveOut.PlaybackState == PlaybackState.Playing)
-                        {
-                            Thread.Sleep(100);
-                        }
-                    }
+                    Thread.Sleep(100);
                 }
             }
         }
 
         public void PlayFile(string audioFile, bool exclusive = true)
         {
-            if (instance != null)
-            {
-                lock (syncRoot)
-                {
-                    using (var file = new AudioFileReader(audioFile))
-                    {
-                        _waveOut.Init(file);
-                        _waveOut.Play();
+            if (_instance == null)
+                return;
 
-                        if (exclusive)
-                        {
-                            while (_waveOut.PlaybackState == PlaybackState.Playing)
-                            {
-                                Thread.Sleep(100);
-                            }
-                        }
+            lock (SyncRoot)
+            {
+                using (var file = new AudioFileReader(audioFile))
+                {
+                    _waveOut.Init(file);
+                    _waveOut.Play();
+
+                    if (!exclusive)
+                        return;
+
+                    while (_waveOut.PlaybackState == PlaybackState.Playing)
+                    {
+                        Thread.Sleep(100);
                     }
                 }
             }

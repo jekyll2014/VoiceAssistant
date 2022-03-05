@@ -5,7 +5,7 @@ namespace HelloPlugin
     public class HelloPluginSettings
     {
         //[JsonProperty(Required = Required.Always)]
-        public PluginCommand[] Commands { get; set; } = new PluginCommand[]
+        public PluginCommand[] Commands { get; set; } =
         {
             new PluginCommand
             {
@@ -14,11 +14,12 @@ namespace HelloPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "привет"
+                        Value = new[] {"привет"}
                     }
-                }
+                },
+                Response = "И тебе привет"
             },
             new PluginCommand
             {
@@ -27,11 +28,12 @@ namespace HelloPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Здравствуй",
+                        Value = new[] {"Здравствуй"}
                     }
-                }
+                },
+                Response = "И тебе не болеть"
             },
             new PluginCommand
             {
@@ -40,11 +42,18 @@ namespace HelloPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value =  "Доброго",
+                        Value = new[] {"Доброго", "Добрый"}
+                    },
+                    new Token
+                    {
+                        SuccessRate = 90,
+                        Type = TokenType.Command,
+                        Value = new[] {"дня", "день"}
                     }
-                }
+                },
+                Response = "И тебе доброго дня"
             },
             new PluginCommand
             {
@@ -53,11 +62,12 @@ namespace HelloPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Хай"
+                        Value = new[] {"Хай"}
                     }
-                }
+                },
+                Response = "Хаюшки"
             }
         };
     }

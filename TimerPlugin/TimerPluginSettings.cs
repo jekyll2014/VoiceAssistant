@@ -6,7 +6,8 @@ namespace TimerPlugin
     {
         //[JsonProperty(Required = Required.Always)]
         public string AlarmSound = "timer.wav";
-        public PluginCommand[] Commands { get; set; } = new PluginCommand[]
+
+        public PluginCommand[] Commands { get; set; } =
         {
             new PluginCommand
             {
@@ -15,72 +16,36 @@ namespace TimerPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Поставь"
+                        Value = new[] {"Поставь", "Заведи"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "таймер"
+                        Value = new[] {"таймер"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "на"
+                        Value = new[] {"на"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Parameter,
-                        Value = "%minutes%"
+                        Value = new[] {"%minutes%"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "минут"
+                        Value = new[] {"минут", "минуты", "минуту"}
                     }
-                }
-            },
-            new PluginCommand
-            {
-                Name = "Timer minutes informal",
-                Tokens = new[]
-                {
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "Заведи"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "таймер"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "на"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Parameter,
-                        Value = "%minutes%"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "минут"
-                    }
-                }
+                },
+                Response = "Таймер заведен на {1} минут"
             },
             new PluginCommand
             {
@@ -89,72 +54,36 @@ namespace TimerPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Поставь"
+                        Value = new[] {"Поставь", "Заведи"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "таймер"
+                        Value = new[] {"таймер"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "на"
+                        Value = new[] {"на"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Parameter,
-                        Value = "%seconds%"
+                        Value = new[] {"%seconds%"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "секунд"
+                        Value = new[] {"секунд", "секунды", "секунду"}
                     }
-                }
-            },
-            new PluginCommand
-            {
-                Name = "Timer seconds informal",
-                Tokens = new[]
-                {
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "Заведи"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "таймер"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "на"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Parameter,
-                        Value = "%seconds%"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "секунд"
-                    }
-                }
+                },
+                Response = "Таймер заведен на {2} секунд"
             },
             new PluginCommand
             {
@@ -163,96 +92,48 @@ namespace TimerPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Поставь"
+                        Value = new[] {"Поставь", "Заведи"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "таймер"
+                        Value = new[] {"таймер"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "на"
+                        Value = new[] {"на"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Parameter,
-                        Value = "%minutes%"
+                        Value = new[] {"%minutes%"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "минут"
+                        Value = new[] {"минут", "минуты", "минуту"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Parameter,
-                        Value = "%seconds%"
+                        Value = new[] {"%seconds%"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "секунд"
+                        Value = new[] {"секунд", "секунды", "секунду"}
                     }
-                }
-            },
-            new PluginCommand
-            {
-                Name = "Timer minutes, seconds informal",
-                Tokens = new[]
-                {
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "Заведи"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "таймер"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "на"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Parameter,
-                        Value = "%minutes%"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "минут"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Parameter,
-                        Value = "%seconds%"
-                    },
-                    new Token
-                    {
-                        successRate = 90,
-                        Type = TokenType.Command,
-                        Value = "секунд"
-                    }
-                }
+                },
+                Response = "Таймер заведен на {1} минут {2} секунд"
             },
             new PluginCommand
             {
@@ -261,17 +142,18 @@ namespace TimerPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Останови"
+                        Value = new[] {"Останови"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "таймеры"
-                    },
-                }
+                        Value = new[] {"таймеры"}
+                    }
+                },
+                Response = "Таймеры остановлены"
             },
             new PluginCommand
             {
@@ -280,24 +162,25 @@ namespace TimerPlugin
                 {
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "Останови"
+                        Value = new[] {"Останови"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "все"
+                        Value = new[] {"все"}
                     },
                     new Token
                     {
-                        successRate = 90,
+                        SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = "таймеры"
-                    },
-                }
-            },
+                        Value = new[] {"таймеры"}
+                    }
+                },
+                Response = "Таймеры остановлены"
+            }
         };
     }
 }

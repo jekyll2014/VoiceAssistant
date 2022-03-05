@@ -8,11 +8,12 @@
         public string SelectedAudioOutDevice { get; set; } = "";
         public int AudioInSampleRate { get; set; } = 16000;
         public int AudioOutSampleRate { get; set; } = 44100;
-        public string CallSign { get; set; } = "Вася";
+        public string[] CallSign { get; set; } = {"Вася"};
         public int DefaultSuccessRate { get; set; } = 90;
         public string VoiceName { get; set; } = "Aleksandr";
         public string SpeakerCulture { get; set; } = "ru-RU";
-        public string PluginsFolder { get; set; } = "";
+        public string PluginsFolder { get; set; } = "plugins";
+        public string PluginFileMask { get; set; } = "*Plugin.dll";
         public string StartSound { get; set; } = "AssistantStart.wav";
         public string MisrecognitionSound { get; set; } = "Misrecognition.wav";
         public int CommandAwaitTime { get; set; } = 10;

@@ -9,13 +9,8 @@ namespace PluginInterface
     public class Config<T> where T : class, new()
     {
         private readonly string _configFileName;
-        private T _configStorage = new T();
 
-        public T ConfigStorage
-        {
-            get => _configStorage;
-            set => _configStorage = value;
-        }
+        public T ConfigStorage { get; set; } = new T();
 
         public Config(string file)
         {
@@ -41,18 +36,16 @@ namespace PluginInterface
             return true;
         }
 
-        public T GetSection<T>(JObject json, string sectionName = null) where T : class
+        public TK GetSection<TK>(JObject json, string sectionName = null) where TK : class, new()
         {
             if (string.IsNullOrEmpty(_configFileName))
                 return default;
 
             if (string.IsNullOrEmpty(sectionName))
-            {
-                return json?.ToObject<T>() ??
+                return json?.ToObject<TK>() ??
                        throw new InvalidOperationException($"Cannot find section {sectionName}");
-            }
 
-            return json[sectionName]?.ToObject<T>() ??
+            return json[sectionName]?.ToObject<TK>() ??
                    throw new InvalidOperationException($"Cannot find section {sectionName}");
         }
 
