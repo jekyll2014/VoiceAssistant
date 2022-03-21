@@ -6,18 +6,20 @@ ToDo:
 - use MQTT connection for instance-to-instance command exchange (manage by plugin)
 
 Plugins list planned:
-1. Hello
-2. Timer
-3. MPC-HC (VLC?) control with web interface
-4. Google/Yandex calendar task add
-5. Weather check
+1. Hello (done)
+2. Timer (done)
+8. Open web-site in browser (done)
+9. Run program (done)
+
+4. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
+3. MPC-HC (VLC?) control with web interface (https://github.com/SJellicoe/MPC-Remote-Control-Server)
+12. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
+7. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp http://iantonov.me/page/kak-poluchit-kurs-valjut-sredstvami-c)
+
+5. Weather check (yandex)
 6. Suburban trains (yandex)
-7. Currency rates
-8. Open web-site in browser
-9. Run program
-10. Message broadcast/announce to selected/all instances in the network (websocket or json + mqtt)
-11. Voice connection (interphone/speakerphone) between instances
-12. Play music from folder by name/artist
+10. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
+11. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
 */
 
 using FuzzySharp;
@@ -70,7 +72,9 @@ namespace VoiceAssistant
 
                 if (!string.IsNullOrEmpty(_appConfig.SelectedAudioOutDevice) &&
                     caps.ProductName.StartsWith(_appConfig.SelectedAudioOutDevice))
+                {
                     selectedDevice = n;
+                }
             }
 
             recordOutputs.TryGetValue(selectedDevice, out var outDevice);
@@ -96,7 +100,9 @@ namespace VoiceAssistant
 
                 if (!string.IsNullOrEmpty(_appConfig.SelectedAudioInDevice) &&
                     caps.ProductName.StartsWith(_appConfig.SelectedAudioInDevice))
+                {
                     selectedDevice = n;
+                }
             }
 
             recordInputs.TryGetValue(selectedDevice, out var inDevice);
@@ -123,7 +129,9 @@ namespace VoiceAssistant
                 if (!string.IsNullOrEmpty(_appConfig.VoiceName))
                 {
                     if (info.Name == _appConfig.VoiceName)
+                    {
                         synthesizer.SelectVoice(_appConfig.VoiceName);
+                    }
                 }
                 else if (!string.IsNullOrEmpty(_appConfig.SpeakerCulture) &&
                          info.Culture.Name.StartsWith(_appConfig.SpeakerCulture))
@@ -240,19 +248,25 @@ namespace VoiceAssistant
                 Console.WriteLine($"\r\nPlugin: {plugin.PluginName}");
 
                 foreach (var com in plugin.Commands)
+                {
                     Console.WriteLine($"- Command: {com}");
+                }
             }
 
             void ProcessNewWords(object s, WaveInEventArgs waveEventArgs)
             {
                 if (!rec.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded))
+                {
                     return;
+                }
 
                 var jsonResult = rec.Result();
                 var result = JsonConvert.DeserializeObject<VoskResult>(jsonResult);
 
                 if (result == null || string.IsNullOrEmpty(result.text))
+                {
                     return;
+                }
 
                 // Debug
                 Console.WriteLine("Recognized words: " + result.text);
@@ -260,7 +274,9 @@ namespace VoiceAssistant
                 foreach (var wordResult in result.result)
                 {
                     if (string.IsNullOrEmpty(wordResult.word))
+                    {
                         continue;
+                    }
 
                     wordResult.word = wordResult.word.ToLower();
 
@@ -317,6 +333,7 @@ namespace VoiceAssistant
                             collectingIntent = false;
                             // запускаем найденную команду
                             var command = currentCommand.FirstOrDefault();
+
                             if (command != null)
                             {
                                 var foundPlugin = _plugins.FirstOrDefault(n => n.PluginName == command.PluginName);
@@ -353,7 +370,9 @@ namespace VoiceAssistant
             var command = "";
 
             while (!command.Equals("exit", StringComparison.OrdinalIgnoreCase))
+            {
                 command = Console.ReadLine();
+            }
 
             waveIn.StopRecording();
 
@@ -368,9 +387,17 @@ namespace VoiceAssistant
             foreach (var word in expectedWords)
             {
                 var result = Fuzz.WeightedRatio(word.ToLower(), newWord.ToLower());
+                var lengthDifference = (float)word.Length / (float)newWord.Length;
+
+                if (lengthDifference <= 0.5 || lengthDifference >= 2)
+                {
+                    result /= 2;
+                }
 
                 if (result >= successRate)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -384,7 +411,7 @@ namespace VoiceAssistant
                 var curentPosition = command.CommandTokens.Count;
 
                 // если команда уже закончилась, то можно лишь добивать слова в последний параметр
-                if (command.ExpectedCommand.Tokens.Length == curentPosition - 1)
+                if (command.ExpectedCommand.Tokens.Length <= curentPosition)
                 {
                     // если последним идет параметр
                     if (command.ExpectedCommand.Tokens.LastOrDefault().Type == TokenType.Parameter)
@@ -411,7 +438,7 @@ namespace VoiceAssistant
                 {
                     var newToken = new Token
                     {
-                        Value = new[] {newTokenString},
+                        Value = new[] { newTokenString },
                         Type = TokenType.Parameter,
                         SuccessRate = currentExpectedCommandWord.SuccessRate
                     };
@@ -427,7 +454,7 @@ namespace VoiceAssistant
                     {
                         var newToken = new Token
                         {
-                            Value = new[] {newTokenString},
+                            Value = new[] { newTokenString },
                             Type = TokenType.Command,
                             SuccessRate = currentExpectedCommandWord.SuccessRate
                         };

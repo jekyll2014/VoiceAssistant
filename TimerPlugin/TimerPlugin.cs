@@ -10,51 +10,81 @@ namespace TimerPlugin
 {
     public class TimerPlugin : PluginBase
     {
+        private readonly TimerPluginCommand[] TimerCommands;
         private readonly string _alarmSound;
-        private List<Timer> _timers = new List<Timer>();
+        private readonly string _incorrectTime;
+        private List<(string, Timer)> _timers = new List<(string, Timer)>();
 
         public TimerPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
         {
             var configBuilder = new Config<TimerPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
+            if (!File.Exists($"{PluginPath}\\{PluginConfigFile}"))
+            {
+                configBuilder.SaveConfig();
+            }
 
-            if (!File.Exists($"{PluginPath}\\{PluginConfigFile}")) configBuilder.SaveConfig();
+            TimerCommands = configBuilder.ConfigStorage.Commands;
 
-            _commands = configBuilder.ConfigStorage.Commands;
+            if (TimerCommands is PluginCommand[] newCmds)
+            {
+                _commands = newCmds;
+            }
+
             _alarmSound = configBuilder.ConfigStorage.AlarmSound;
+            _incorrectTime = configBuilder.ConfigStorage.IncorrectTime;
         }
 
         public override string Execute(string commandName, List<Token> commandTokens)
         {
-            var command = Commands.FirstOrDefault(n => n.Name == commandName);
+            var command = TimerCommands.FirstOrDefault(n => n.Name == commandName);
 
-            var paramValue = string.Empty;
+            var response = string.Empty;
 
             if (command == null)
-                return paramValue;
-
-            if (commandName.StartsWith("stop", StringComparison.OrdinalIgnoreCase))
             {
-                foreach (var t in _timers) t.Stop();
-                _timers = new List<Timer>();
+                return response;
+            }
 
-                paramValue = command.Response;
+            var minToken = command.GetParameter("%minutes%", commandTokens);
+            var secToken = command.GetParameter("%seconds%", commandTokens);
+            var minCount = 0;
+
+            if (minToken != null)
+            {
+                minCount = TextToNumberRus.GetNumber(minToken.Value[0], minToken.SuccessRate);
+            }
+
+            var secCount = 0;
+            if (secToken != null)
+            {
+                secCount = TextToNumberRus.GetNumber(secToken.Value[0], secToken.SuccessRate);
+            }
+
+            if (minCount + secCount == 0)
+            {
+                response = _incorrectTime;
             }
             else
             {
-                var minToken = command.GetParameter("%minutes%", commandTokens);
-                var secToken = command.GetParameter("%seconds%", commandTokens);
-                var minCount = 0;
+                var delay = $"{minCount}+{secCount}";
 
-                if (minToken != null)
-                    minCount = TextToNumberRus.GetNumber(minToken.Value[0], minToken.SuccessRate);
-
-                var secCount = 0;
-                if (secToken != null)
-                    secCount = TextToNumberRus.GetNumber(secToken.Value[0], secToken.SuccessRate);
-
-                if (minCount + secCount == 0)
+                if (command.isStopCommand)
                 {
-                    paramValue = "Некорректное время";
+                    var timer = _timers.FirstOrDefault(n => n.Item2.Enabled && n.Item1 == delay);
+
+                    if (timer.Item2 != null)
+                    {
+                        timer.Item2.Stop();
+                        _timers.Remove(timer);
+                        response = command.Response;
+                        // string.Empty is used to avoid using {0} int templates
+                        response = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
+                            NumberToTextRus.Str(secCount));
+                    }
+                    else
+                    {
+                        response = "не найден";
+                    }
                 }
                 else
                 {
@@ -64,20 +94,30 @@ namespace TimerPlugin
                         Interval = new TimeSpan(0, minCount, secCount).TotalMilliseconds
                     };
 
-                    t.Elapsed += (obj, args) => { AudioOut.PlayFile($"{PluginPath}\\{_alarmSound}"); };
+                    t.Elapsed += (obj, args) =>
+                    {
+                        var timer = _timers.FirstOrDefault(n => n.Item2 == obj);
 
-                    _timers.Add(t);
+                        if (timer.Item2 != null)
+                        {
+                            _timers.Remove(timer);
+                        }
+
+                        AudioOut.PlayFile($"{PluginPath}\\{_alarmSound}");
+                    };
+
+                    _timers.Add((delay, t));
                     t.Start();
-
                     // string.Empty is used to avoid using {0} int templates
-                    paramValue = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
+                    response = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
                         NumberToTextRus.Str(secCount));
                 }
             }
 
-            AudioOut.Speak(paramValue);
 
-            return paramValue;
+            AudioOut.Speak(response);
+
+            return response;
         }
     }
 }

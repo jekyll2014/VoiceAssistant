@@ -3,22 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32126.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceAssistant", "VoiceAssistant\VoiceAssistant.csproj", "{298A14AF-23B7-4520-AC88-F34499FA784A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoiceAssistant", "VoiceAssistant\VoiceAssistant.csproj", "{298A14AF-23B7-4520-AC88-F34499FA784A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D8E672A3-242D-436B-9C6C-F92B8F864F4C} = {D8E672A3-242D-436B-9C6C-F92B8F864F4C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimerPlugin", "TimerPlugin\TimerPlugin.csproj", "{FBC63F53-EE4B-4E6E-81D6-0AF31019F517}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimerPlugin", "TimerPlugin\TimerPlugin.csproj", "{FBC63F53-EE4B-4E6E-81D6-0AF31019F517}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D8E672A3-242D-436B-9C6C-F92B8F864F4C} = {D8E672A3-242D-436B-9C6C-F92B8F864F4C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloPlugin", "HelloPlugin\HelloPlugin.csproj", "{D4F6D69B-7655-44A6-8E82-38698B3C19B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloPlugin", "HelloPlugin\HelloPlugin.csproj", "{D4F6D69B-7655-44A6-8E82-38698B3C19B6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D8E672A3-242D-436B-9C6C-F92B8F864F4C} = {D8E672A3-242D-436B-9C6C-F92B8F864F4C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginInterface", "PluginInterface\PluginInterface.csproj", "{D8E672A3-242D-436B-9C6C-F92B8F864F4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginInterface", "PluginInterface\PluginInterface.csproj", "{D8E672A3-242D-436B-9C6C-F92B8F864F4C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPlugin", "BrowserPlugin\BrowserPlugin.csproj", "{B8B95E2A-AB96-42B6-B9CD-3C402F5FDD6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunProgramPlugin", "RunProgramPlugin\RunProgramPlugin.csproj", "{167C8B0A-E613-4B9B-AE8A-C09C8B167166}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +46,14 @@ Global
 		{D8E672A3-242D-436B-9C6C-F92B8F864F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8E672A3-242D-436B-9C6C-F92B8F864F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8E672A3-242D-436B-9C6C-F92B8F864F4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8B95E2A-AB96-42B6-B9CD-3C402F5FDD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B95E2A-AB96-42B6-B9CD-3C402F5FDD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B95E2A-AB96-42B6-B9CD-3C402F5FDD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B95E2A-AB96-42B6-B9CD-3C402F5FDD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

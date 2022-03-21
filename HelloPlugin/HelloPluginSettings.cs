@@ -2,12 +2,17 @@
 
 namespace HelloPlugin
 {
+    public class HelloPluginCommand : PluginCommand
+    {
+        public string Response = "";
+    }
+
     public class HelloPluginSettings
     {
         //[JsonProperty(Required = Required.Always)]
-        public PluginCommand[] Commands { get; set; } =
+        public HelloPluginCommand[] Commands { get; set; } =
         {
-            new PluginCommand
+            new HelloPluginCommand
             {
                 Name = "Greeting informal",
                 Tokens = new[]
@@ -21,7 +26,7 @@ namespace HelloPlugin
                 },
                 Response = "И тебе привет"
             },
-            new PluginCommand
+            new HelloPluginCommand
             {
                 Name = "Greeting formal",
                 Tokens = new[]
@@ -35,7 +40,7 @@ namespace HelloPlugin
                 },
                 Response = "И тебе не болеть"
             },
-            new PluginCommand
+            new HelloPluginCommand
             {
                 Name = "Greeting wishing",
                 Tokens = new[]
@@ -55,7 +60,7 @@ namespace HelloPlugin
                 },
                 Response = "И тебе доброго дня"
             },
-            new PluginCommand
+            new HelloPluginCommand
             {
                 Name = "Greeting short informal",
                 Tokens = new[]

@@ -8,7 +8,6 @@ namespace PluginInterface
     {
         public string Name;
         public Token[] Tokens;
-        public string Response;
 
         public Token GetParameter(string paramName, IEnumerable<Token> tokens)
         {
@@ -47,13 +46,6 @@ namespace PluginInterface
         public string[] Value;
         public TokenType Type = TokenType.Unknown;
         public int SuccessRate = 100; // success rato for fuzzy compare
-    }
-
-    public class ProcessingCommand
-    {
-        public string PluginName;
-        public PluginCommand ExpectedCommand;
-        public List<Token> CommandTokens = new List<Token>();
     }
 
     public enum TokenType
