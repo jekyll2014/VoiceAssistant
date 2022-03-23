@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using PluginInterface;
 
 namespace HelloPlugin
@@ -23,20 +24,35 @@ namespace HelloPlugin
             {
                 _commands = newCmds;
             }
+
+            // example of listening to the audio/word stream from core module.
+            //base.AcceptsSound = true;
+            //base.AcceptsWords = true;
         }
 
-        public override string Execute(string commandName, List<Token> commandTokens)
+        public override void Execute(string commandName, List<Token> commandTokens)
         {
             var command = HelloCommands.FirstOrDefault(n => n.Name == commandName);
 
             if (command == null)
             {
-                return string.Empty;
+                return;
             }
 
-            AudioOut.Speak(command.Response);
+            // example of listening to the audio/word stream from core module.
+            /*
+            var sndData = GetSound();
+            AudioOut.PlayDataBuffer(sndData);
+            
+            var wordsData = "";            
+            foreach (var w in GetWords())
+            {
+                wordsData += " " + w;
+            }
+            Console.WriteLine($"ReceivedText: {wordsData}");
+            */
 
-            return command.Response;
+            AudioOut.Speak(command.Response);
         }
     }
 }

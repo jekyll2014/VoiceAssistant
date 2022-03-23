@@ -22,7 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginInterface", "PluginIn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPlugin", "BrowserPlugin\BrowserPlugin.csproj", "{B8B95E2A-AB96-42B6-B9CD-3C402F5FDD6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunProgramPlugin", "RunProgramPlugin\RunProgramPlugin.csproj", "{167C8B0A-E613-4B9B-AE8A-C09C8B167166}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunProgramPlugin", "RunProgramPlugin\RunProgramPlugin.csproj", "{167C8B0A-E613-4B9B-AE8A-C09C8B167166}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRatePlugin", "CurrencyRatePlugin\CurrencyRatePlugin.csproj", "{CA81441C-2635-4847-A86D-0F8C57F7243D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{167C8B0A-E613-4B9B-AE8A-C09C8B167166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA81441C-2635-4847-A86D-0F8C57F7243D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA81441C-2635-4847-A86D-0F8C57F7243D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA81441C-2635-4847-A86D-0F8C57F7243D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA81441C-2635-4847-A86D-0F8C57F7243D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

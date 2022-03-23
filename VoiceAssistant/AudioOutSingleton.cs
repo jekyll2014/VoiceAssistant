@@ -99,5 +99,29 @@ namespace VoiceAssistant
                 }
             }
         }
+
+        public void PlayDataBuffer(byte[] data, bool exclusive = true)
+        {
+            if (_instance == null)
+                return;
+
+            lock (SyncRoot)
+            {
+                using (var provider = new RawSourceWaveStream(new MemoryStream(data), new WaveFormat(16000, 1)))
+                {
+                    provider.Position = 0;
+                    _waveOut.Init(provider);
+                    _waveOut.Play();
+
+                    if (!exclusive)
+                        return;
+
+                    while (_waveOut.PlaybackState == PlaybackState.Playing)
+                    {
+                        Thread.Sleep(100);
+                    }
+                }
+            }
+        }
     }
 }

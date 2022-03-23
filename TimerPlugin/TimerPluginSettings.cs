@@ -13,19 +13,20 @@ namespace TimerPlugin
         //[JsonProperty(Required = Required.Always)]
         public string AlarmSound = "timer.wav";
         public string IncorrectTime = "Некорректное время";
+        public string TimerNotFound = "Таймер не найден";
 
         public TimerPluginCommand[] Commands { get; set; } =
         {
             new TimerPluginCommand
             {
-                Name = "Timer minutes",
+                Name = "Run timer minutes",
                 Tokens = new[]
                 {
                     new Token
                     {
                         SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = new[] {"Поставь", "Заведи"}
+                        Value = new[] {"Поставь", "Заведи", "Запусти"}
                     },
                     new Token
                     {
@@ -96,14 +97,14 @@ namespace TimerPlugin
             },
             new TimerPluginCommand
             {
-                Name = "Timer seconds",
+                Name = "Run timer seconds",
                 Tokens = new[]
                 {
                     new Token
                     {
                         SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = new[] {"Поставь", "Заведи"}
+                        Value = new[] {"Поставь", "Заведи", "Запусти"}
                     },
                     new Token
                     {
@@ -174,14 +175,14 @@ namespace TimerPlugin
             },
             new TimerPluginCommand
             {
-                Name = "Timer minutes, seconds",
+                Name = "Run timer minutes, seconds",
                 Tokens = new[]
                 {
                     new Token
                     {
                         SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = new[] {"Поставь", "Заведи"}
+                        Value = new[] {"Поставь", "Заведи", "Запусти"}
                     },
                     new Token
                     {

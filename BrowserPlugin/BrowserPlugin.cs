@@ -42,13 +42,13 @@ namespace BrowserPlugin
             _alreadyRunning = configBuilder.ConfigStorage.AlreadyRunning;
         }
 
-        public override string Execute(string commandName, List<Token> commandTokens)
+        public override void Execute(string commandName, List<Token> commandTokens)
         {
             var command = BrowserCommands.FirstOrDefault(n => n.Name == commandName);
 
             if (command == null)
             {
-                return string.Empty;
+                return;
             }
 
             var response = string.Empty;
@@ -110,8 +110,6 @@ namespace BrowserPlugin
                 }
             }
             AudioOut.Speak(response);
-
-            return response;
         }
 
         private Process OpenUrl(string url, bool standAloneBrowser = false)
@@ -157,41 +155,48 @@ namespace BrowserPlugin
             }
             catch
             {
-                // hack because of this: https://github.com/dotnet/corefx/issues/10361
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                try
                 {
-                    url = url.Replace("&", "^&");
-                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-
-                    /*
-                    Process myProcess = new Process();
-                    try
+                    // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
-                        // true is the default, but it is important not to set it to false
-                        myProcess.StartInfo.UseShellExecute = true; 
-                        myProcess.StartInfo.FileName = "http://some.domain.tld/bla";
-                        myProcess.Start();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                    */
-                    //Windows.System.Launcher.LaunchUriAsync(new Uri("http://google.com"));
-                    //Process.Start("explorer.exe", $"\"{uri}\"");
+                        url = url.Replace("&", "^&");
+                        proc = Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
+                        /*
+                        Process myProcess = new Process();
+                        try
+                        {
+                            // true is the default, but it is important not to set it to false
+                            myProcess.StartInfo.UseShellExecute = true; 
+                            myProcess.StartInfo.FileName = "http://some.domain.tld/bla";
+                            myProcess.Start();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                        */
+                        //Windows.System.Launcher.LaunchUriAsync(new Uri("http://google.com"));
+                        //Process.Start("explorer.exe", $"\"{uri}\"");
+
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        proc = Process.Start("xdg-open", url);
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        proc = Process.Start("open", url);
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                catch
                 {
-                    Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
+                    return null;
                 }
             }
 

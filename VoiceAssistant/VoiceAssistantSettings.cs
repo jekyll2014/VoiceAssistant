@@ -19,5 +19,9 @@
         public int CommandAwaitTime { get; set; } = 10;
         public int NextWordAwaitTime { get; set; } = 3;
         public int VoskLogLevel { get; set; } = -1;
+        public string CommandNotRecognizedMessage { get; set; } = "Команда не распознана";
+        public string CommandNotFoundMessage { get; set; } = "Команда не найдена";
+        public bool AllowPluginsToListenToSound { get; set; } = false;
+        public bool AllowPluginsToListenToWords { get; set; } = false;
     }
 }

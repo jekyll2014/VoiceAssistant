@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -40,13 +39,13 @@ namespace RunProgramPlugin
             _alreadyRunning = configBuilder.ConfigStorage.AlreadyRunning;
         }
 
-        public override string Execute(string commandName, List<Token> commandTokens)
+        public override void Execute(string commandName, List<Token> commandTokens)
         {
             var command = RunProgramCommands.FirstOrDefault(n => n.Name == commandName);
 
             if (command == null)
             {
-                return string.Empty;
+                return;
             }
 
             var response = string.Empty;
@@ -107,9 +106,8 @@ namespace RunProgramPlugin
                     response = _alreadyRunning;
                 }
             }
-            AudioOut.Speak(response);
 
-            return response;
+            AudioOut.Speak(response);
         }
 
         private Process RunCommand(string command)
@@ -121,41 +119,48 @@ namespace RunProgramPlugin
             }
             catch
             {
-                // hack because of this: https://github.com/dotnet/corefx/issues/10361
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                try
                 {
-                    command = command.Replace("&", "^&");
-                    proc = Process.Start(new ProcessStartInfo(command) { UseShellExecute = true });
-
-                    /*
-                    Process myProcess = new Process();
-                    try
+                    // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
-                        // true is the default, but it is important not to set it to false
-                        myProcess.StartInfo.UseShellExecute = true; 
-                        myProcess.StartInfo.FileName = "http://some.domain.tld/bla";
-                        myProcess.Start();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                    */
-                    //Windows.System.Launcher.LaunchUriAsync(new Uri("http://google.com"));
-                    //Process.Start("explorer.exe", $"\"{uri}\"");
+                        command = command.Replace("&", "^&");
+                        proc = Process.Start(new ProcessStartInfo(command) { UseShellExecute = true });
 
+                        /*
+                        Process myProcess = new Process();
+                        try
+                        {
+                            // true is the default, but it is important not to set it to false
+                            myProcess.StartInfo.UseShellExecute = true; 
+                            myProcess.StartInfo.FileName = "http://some.domain.tld/bla";
+                            myProcess.Start();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                        */
+                        //Windows.System.Launcher.LaunchUriAsync(new Uri("http://google.com"));
+                        //Process.Start("explorer.exe", $"\"{uri}\"");
+
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        proc = Process.Start("xdg-open", command);
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        proc = Process.Start("open", command);
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                catch
                 {
-                    proc = Process.Start("xdg-open", command);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    proc = Process.Start("open", command);
-                }
-                else
-                {
-                    throw;
+                    return null;
                 }
             }
 

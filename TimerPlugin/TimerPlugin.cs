@@ -13,7 +13,8 @@ namespace TimerPlugin
         private readonly TimerPluginCommand[] TimerCommands;
         private readonly string _alarmSound;
         private readonly string _incorrectTime;
-        private List<(string, Timer)> _timers = new List<(string, Timer)>();
+        private readonly string _timerNotFound;
+        private readonly List<(string, Timer)> _timers = new List<(string, Timer)>();
 
         public TimerPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
         {
@@ -32,17 +33,17 @@ namespace TimerPlugin
 
             _alarmSound = configBuilder.ConfigStorage.AlarmSound;
             _incorrectTime = configBuilder.ConfigStorage.IncorrectTime;
+            _timerNotFound = configBuilder.ConfigStorage.TimerNotFound;
         }
 
-        public override string Execute(string commandName, List<Token> commandTokens)
+        public override void Execute(string commandName, List<Token> commandTokens)
         {
             var command = TimerCommands.FirstOrDefault(n => n.Name == commandName);
 
-            var response = string.Empty;
 
             if (command == null)
             {
-                return response;
+                return;
             }
 
             var minToken = command.GetParameter("%minutes%", commandTokens);
@@ -60,7 +61,8 @@ namespace TimerPlugin
                 secCount = TextToNumberRus.GetNumber(secToken.Value[0], secToken.SuccessRate);
             }
 
-            if (minCount + secCount == 0)
+            var response = string.Empty;
+            if (!command.isStopCommand && minCount + secCount == 0)
             {
                 response = _incorrectTime;
             }
@@ -83,7 +85,7 @@ namespace TimerPlugin
                     }
                     else
                     {
-                        response = "не найден";
+                        response = _timerNotFound;
                     }
                 }
                 else
@@ -108,16 +110,14 @@ namespace TimerPlugin
 
                     _timers.Add((delay, t));
                     t.Start();
+
                     // string.Empty is used to avoid using {0} int templates
                     response = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
                         NumberToTextRus.Str(secCount));
                 }
             }
 
-
             AudioOut.Speak(response);
-
-            return response;
         }
     }
 }

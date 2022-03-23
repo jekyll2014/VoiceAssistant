@@ -1,25 +1,31 @@
 ﻿/*
+Used resources:
+- VOSK voice recognition module: https://alphacephei.com/vosk/
+  language models: https://alphacephei.com/vosk/models
+- RHVoice Lab voices for Windows SAPI5: https://rhvoice.su/voices/
+- NAudio project: https://github.com/naudio/NAudio
+- Weighting string comparison alghoritm: https://github.com/JakeBayer/FuzzySharp
+
 ToDo:
 - move core messages into resources
 - command validation all over plugins to avoid similar commands
-- check if audio capture can be used by plugin
-- use MQTT connection for instance-to-instance command exchange (manage by plugin)
+- allow command injection from plugin (enable by config parameter)
 
 Plugins list planned:
 1. Hello (done)
 2. Timer (done)
-8. Open web-site in browser (done)
-9. Run program (done)
+3. Open web-site in browser (done)
+4. Run program (done)
+5. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp http://iantonov.me/page/kak-poluchit-kurs-valjut-sredstvami-c)
 
-4. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
-3. MPC-HC (VLC?) control with web interface (https://github.com/SJellicoe/MPC-Remote-Control-Server)
-12. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
-7. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp http://iantonov.me/page/kak-poluchit-kurs-valjut-sredstvami-c)
+6. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
+7. MPC-HC (VLC?) control with web interface (https://github.com/SJellicoe/MPC-Remote-Control-Server)
+8. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
 
-5. Weather check (yandex)
-6. Suburban trains (yandex)
-10. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
-11. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
+9. Weather check (yandex)
+10. Suburban trains (yandex)
+11. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
+12. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
 */
 
 using FuzzySharp;
@@ -44,21 +50,88 @@ namespace VoiceAssistant
     {
         private static readonly string _appConfigFile = "appsettings.json";
         private static VoiceAssistantSettings _appConfig;
+        private static GenericPluginLoader<PluginBase> pluginLoader = new GenericPluginLoader<PluginBase>();
         private static List<PluginBase> _plugins = new List<PluginBase>();
+        private static List<ProcessingCommand> currentCommand = new List<ProcessingCommand>();
+        private static bool collectingIntent = false;
+        private static AudioOutSingleton audioOut;
+        private static VoskRecognizer voiceRecognition;
+        private static Timer commandAwaitTimer;
+        private static readonly object SyncRoot = new object();
 
         private static void Main(string[] args)
+        {
+            _appConfig = LoadConfig();
+
+            Console.WriteLine("Voice Assistant");
+
+            // Init audio output device
+            var waveOut = InitAudioOutput();
+
+            // Init audio input device
+            var waveIn = InitAudioInput();
+
+            // Init Speech recognition
+            voiceRecognition = InitSpeechToText();
+            if (voiceRecognition == null)
+                return;
+
+            // init TTS
+            audioOut = InitTextToSpeech(waveOut);
+
+            // load plugins
+            _plugins = LoadPlugins();
+
+            // Init timer to cancel command waiting
+            commandAwaitTimer = InitCommandAwaitTimer();
+            commandAwaitTimer.Elapsed += CommandAwaitTimerElapsed;
+
+            // print out assistant name
+            Console.WriteLine("\r\nAssistant names:");
+            foreach (var name in _appConfig.CallSign)
+            {
+                Console.Write($"  {name}");
+            }
+
+            Console.WriteLine();
+
+            // start listening
+            waveIn.DataAvailable += ProcessAudioInput;
+            waveIn.RecordingStopped += (s, a) => { waveIn.Dispose(); };
+            waveIn.StartRecording();
+
+            audioOut.PlayFile(_appConfig.StartSound);
+            Console.WriteLine("\r\nAssistant started");
+
+            // wait for the program to stop
+            var command = "";
+            while (!command.Equals("exit", StringComparison.OrdinalIgnoreCase))
+            {
+                command = Console.ReadLine();
+            }
+
+            waveIn.StopRecording();
+            waveIn.Dispose();
+
+            waveOut.Stop();
+            waveOut.Dispose();
+
+            //unload plugins
+            pluginLoader.UnloadAll();
+        }
+
+        private static VoiceAssistantSettings LoadConfig()
         {
             var configBuilder = new Config<VoiceAssistantSettings>(_appConfigFile);
 
             if (!File.Exists(_appConfigFile))
                 configBuilder.SaveConfig();
 
-            _appConfig = configBuilder.ConfigStorage;
-            var currentCommand = new List<ProcessingCommand>();
+            return configBuilder.ConfigStorage;
+        }
 
-            Console.WriteLine("Voice Assistant");
-
-            // Init audio output device
+        private static WaveOut InitAudioOutput()
+        {
             var audioDeviceNumber = WaveOut.DeviceCount;
             var recordOutputs = new Dictionary<int, string>(audioDeviceNumber + 1);
             var selectedDevice = -1;
@@ -86,11 +159,15 @@ namespace VoiceAssistant
 
             Console.WriteLine($"Selected output device: {outDevice}");
 
-            // Init audio input device
+            return waveOut;
+        }
+
+        private static WaveInEvent InitAudioInput()
+        {
             var recordDeviceNumber = WaveIn.DeviceCount;
             var recordInputs = new Dictionary<int, string>(recordDeviceNumber + 1);
             Console.WriteLine("\r\nAvailable input devices:");
-            selectedDevice = -1;
+            var selectedDevice = -1;
 
             for (var n = -1; n < recordDeviceNumber; n++)
             {
@@ -116,10 +193,15 @@ namespace VoiceAssistant
             Console.WriteLine($"Selected input device: {inDevice}");
             Console.WriteLine($"Stream settings: {waveIn.WaveFormat}");
 
-            // init TTS
+            return waveIn;
+        }
+
+        private static AudioOutSingleton InitTextToSpeech(WaveOut waveOut)
+        {
             var synthesizer = new SpeechSynthesizer();
             Console.WriteLine("\r\nAvailable voices:");
 
+            var voiceSelected = false;
             foreach (var voice in synthesizer.GetInstalledVoices())
             {
                 var info = voice.VoiceInfo;
@@ -131,10 +213,13 @@ namespace VoiceAssistant
                     if (info.Name == _appConfig.VoiceName)
                     {
                         synthesizer.SelectVoice(_appConfig.VoiceName);
+                        voiceSelected = true;
                     }
                 }
-                else if (!string.IsNullOrEmpty(_appConfig.SpeakerCulture) &&
-                         info.Culture.Name.StartsWith(_appConfig.SpeakerCulture))
+
+                if (!voiceSelected
+                    && !string.IsNullOrEmpty(_appConfig.SpeakerCulture)
+                    && info.Culture.Name.StartsWith(_appConfig.SpeakerCulture))
                 {
                     synthesizer.SelectVoice(info.Name);
                 }
@@ -147,16 +232,20 @@ namespace VoiceAssistant
             var audioOut = AudioOutSingleton.GetInstance(_appConfig.SpeakerCulture, synthesizer, builder, waveOut,
                 _appConfig.AudioOutSampleRate);
 
-            // Init Speech recognition
-            // You can set to -1 to disable logging messages
+            return audioOut;
+        }
+
+        private static VoskRecognizer InitSpeechToText()
+        {
+            // set -1 to disable logging messages
             Vosk.Vosk.SetLogLevel(_appConfig.VoskLogLevel);
             VoskRecognizer rec;
 
             if (!Directory.Exists(_appConfig.ModelFolder))
             {
-                Console.WriteLine("Voice recognition model folder missing: " + _appConfig.ModelFolder);
+                Console.WriteLine($"Voice recognition model folder missing: {_appConfig.ModelFolder}");
 
-                return;
+                return null;
             }
 
             try
@@ -166,220 +255,242 @@ namespace VoiceAssistant
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can't load model (could it be missing?): " + ex.Message);
+                Console.WriteLine($"Can't load model (could it be missing?): {ex.Message}");
 
-                return;
+                return null;
             }
 
             rec.SetMaxAlternatives(0);
             rec.SetWords(true);
 
-            var collectingIntent = false;
+            return rec;
+        }
 
-            // Init timer to cancel command waiting
+        private static List<PluginBase> LoadPlugins()
+        {
+            pluginLoader = new GenericPluginLoader<PluginBase>();
+            var pluginFolder = AppDomain.CurrentDomain.BaseDirectory + _appConfig.PluginsFolder;
+
+            //Load all plugins from a folder
+            var plugins = pluginLoader.LoadAll(pluginFolder, _appConfig.PluginFileMask, audioOut);
+            Console.WriteLine($"\r\n{plugins.Count} plugin(s) loaded");
+
+            foreach (var plugin in plugins)
+            {
+                Console.WriteLine($"\r\nPlugin: {plugin.PluginName}");
+
+                foreach (var com in plugin.Commands)
+                {
+                    Console.WriteLine($" - Command name: {com.Name}");
+                    Console.WriteLine($"     Phrase: {com}");
+                }
+            }
+
+            return plugins;
+        }
+
+        private static Timer InitCommandAwaitTimer()
+        {
             var commandAwaitTimer = new Timer
             {
                 AutoReset = false,
                 Interval = _appConfig.CommandAwaitTime * 1000
             };
 
-            void CommandAwaitTimerElapsed(object obj, ElapsedEventArgs eventArgs)
+            return commandAwaitTimer;
+        }
+
+        private static void ProcessAudioInput(object s, WaveInEventArgs waveEventArgs)
+        {
+            lock (SyncRoot)
             {
-                // нашел несколько команд
-                if (currentCommand.Count > 1)
+                var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
+
+                // copy audio data to plugin's buffer if allowed anf if any plugin wants
+                if (_appConfig.AllowPluginsToListenToSound)
                 {
-                    var possibleCommands = currentCommand
-                        .Where(n => n.CommandTokens.Count == n.ExpectedCommand.Tokens.Count()).ToArray();
-                    if (possibleCommands.Count() > 1)
-                    {
-                        audioOut.PlayFile(_appConfig.MisrecognitionSound);
-                        Console.WriteLine("Multiple command definitions");
-                    }
+                    var recordingPlugins = _plugins.Where(n => n.AcceptsSound);
 
-                    // ToDo: do I need "OrderByDescending()" ?
-                    var command = possibleCommands.OrderByDescending(n => n.CommandTokens.Count).FirstOrDefault();
-
-                    if (command != null)
+                    if (recordingPlugins != null && recordingPlugins.Any())
                     {
-                        // запускаем найденную команду
-                        var foundPlugin = _plugins.FirstOrDefault(n => n.PluginName == command.PluginName);
-                        if (foundPlugin != null)
+                        var len = waveEventArgs.BytesRecorded;
+                        byte[] dataCopy = new byte[len];
+                        Array.Copy(waveEventArgs.Buffer, dataCopy, len);
+
+                        foreach (var plugin in recordingPlugins)
                         {
-                            var task = Task.Run(() =>
-                                foundPlugin.Execute(command.ExpectedCommand.Name, command.CommandTokens));
-                            task.Wait();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Plugin not found");
+                            plugin.AddSound(dataCopy);
                         }
                     }
+                }
+
+                if (!recognitionResult)
+                {
+                    return;
+                }
+
+                var jsonResult = voiceRecognition.Result();
+                var newWords = JsonConvert.DeserializeObject<VoskResult>(jsonResult);
+
+                if (newWords == null || string.IsNullOrEmpty(newWords.text))
+                {
+                    return;
+                }
+
+                Console.WriteLine($"Recognized words: {newWords.text}");
+
+                // copy recognized words to plugin's buffer if allowed anf if any plugin wants
+                if (_appConfig.AllowPluginsToListenToWords)
+                {
+                    foreach (var plugin in _plugins)
+                    {
+                        if (plugin.AcceptsWords) plugin.AddWords(newWords.text);
+                    }
+                }
+
+                // process new words
+                ProcessNewWords(newWords.result);
+            }
+        }
+
+        private static void ProcessNewWords(List<Result> newWords)
+        {
+            foreach (var word in newWords)
+            {
+                if (string.IsNullOrEmpty(word.word))
+                {
+                    continue;
+                }
+
+                word.word = word.word.ToLower();
+
+                // looking for an assistant name (keyword)
+                if (!collectingIntent)
+                {
+                    var recognize = FuzzyEqual(_appConfig.CallSign, word.word, _appConfig.DefaultSuccessRate);
+
+                    if (recognize)
+                    {
+                        // add all plugins command to command pool (to exclude unmatched later)
+                        currentCommand.Clear();
+
+                        foreach (var plugin in _plugins)
+                        {
+                            foreach (var command in plugin.Commands)
+                            {
+                                var newCmdItem = new ProcessingCommand
+                                {
+                                    PluginName = plugin.PluginName,
+                                    ExpectedCommand = command
+                                };
+
+                                currentCommand.Add(newCmdItem);
+                            }
+                        }
+
+                        //run timer to wait for the command phrase (stop waiting if no command received)
+                        commandAwaitTimer.Interval = _appConfig.CommandAwaitTime * 1000;
+                        commandAwaitTimer.Start();
+                        collectingIntent = true;
+                    }
+                }
+                // add new words to a command phrase
+                else
+                {
+                    //stop timer in any case and restart later if phrase is not completed
+                    commandAwaitTimer.Stop();
+
+                    // check word to comply with any command in command pool
+                    ProcessNextToken(word.word, ref currentCommand);
+
+                    // no commands left similar to the input phrase
+                    if (currentCommand.Count < 1)
+                    {
+                        collectingIntent = false;
+                        audioOut.Speak(_appConfig.CommandNotRecognizedMessage);
+                        Console.WriteLine(_appConfig.CommandNotRecognizedMessage);
+                        currentCommand.Clear();
+                    }
+                    // the only command found
+                    else if (currentCommand.Count == 1)
+                    {
+                        collectingIntent = false;
+                        ExecuteCommand(currentCommand.FirstOrDefault());
+                        currentCommand.Clear();
+                    }
+                    // still there are multiple commands possible
                     else
                     {
-                        audioOut.Speak("Команда не распознана");
-                        Console.WriteLine("Command not recognized");
+                        commandAwaitTimer.Interval = _appConfig.NextWordAwaitTime * 1000;
+                        commandAwaitTimer.Start();
                     }
+                }
+            }
+        }
+
+        private static void CommandAwaitTimerElapsed(object obj, ElapsedEventArgs eventArgs)
+        {
+            lock (SyncRoot)
+            {
+                collectingIntent = false;
+                // shouldn't be possible but just in case
+                if (currentCommand.Count < 1)
+                {
+                    audioOut.PlayFile(_appConfig.MisrecognitionSound);
+                    Console.WriteLine(_appConfig.CommandNotFoundMessage);
                 }
                 else
                 {
-                    audioOut.PlayFile(_appConfig.MisrecognitionSound);
-                    Console.WriteLine("Command not complete");
-                }
+                    // filter out incomplete commands
+                    var possibleCommands = currentCommand
+                        .Where(n => n.CommandTokens.Count == n.ExpectedCommand.Tokens.Count()).ToArray();
 
-                currentCommand = new List<ProcessingCommand>();
-                collectingIntent = false;
-            }
-
-            commandAwaitTimer.Elapsed += CommandAwaitTimerElapsed;
-
-            // load plugins
-            var pluginLoader = new GenericPluginLoader<PluginBase>();
-
-            //Load all plugins from a folder and tell to use the "o" (ISO-8601) date format
-            _plugins = pluginLoader.LoadAll(AppDomain.CurrentDomain.BaseDirectory + _appConfig.PluginsFolder,
-                _appConfig.PluginFileMask, audioOut);
-            Console.WriteLine($"\r\nLoaded {_plugins.Count} plugin(s)");
-
-            // inform assistant name
-            Console.WriteLine($"\r\nAssistant name: {_appConfig.CallSign}");
-
-            foreach (var plugin in _plugins)
-            {
-                Console.WriteLine($"\r\nPlugin: {plugin.PluginName}");
-
-                foreach (var com in plugin.Commands)
-                {
-                    Console.WriteLine($"- Command: {com}");
-                }
-            }
-
-            void ProcessNewWords(object s, WaveInEventArgs waveEventArgs)
-            {
-                if (!rec.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded))
-                {
-                    return;
-                }
-
-                var jsonResult = rec.Result();
-                var result = JsonConvert.DeserializeObject<VoskResult>(jsonResult);
-
-                if (result == null || string.IsNullOrEmpty(result.text))
-                {
-                    return;
-                }
-
-                // Debug
-                Console.WriteLine("Recognized words: " + result.text);
-
-                foreach (var wordResult in result.result)
-                {
-                    if (string.IsNullOrEmpty(wordResult.word))
+                    // multiple commands found
+                    if (possibleCommands.Count() > 1)
                     {
-                        continue;
-                    }
+                        Console.WriteLine("Multiple similar command found. Check command definitions:");
 
-                    wordResult.word = wordResult.word.ToLower();
-
-                    // ждем ключевое слово
-                    if (!collectingIntent)
-                    {
-                        commandAwaitTimer.Stop();
-                        var recognize = FuzzyEqual(_appConfig.CallSign, wordResult.word, _appConfig.DefaultSuccessRate);
-
-                        if (recognize)
+                        foreach (var pcommand in possibleCommands)
                         {
-                            collectingIntent = true;
-                            //запустить таймер на сброс ожидания тела команды
-                            commandAwaitTimer.Interval = _appConfig.CommandAwaitTime * 1000;
-                            commandAwaitTimer.Start();
+                            Console.WriteLine("----");
+                            Console.WriteLine(pcommand.ToString());
+                            Console.WriteLine("----");
                         }
                     }
-                    // ищем слова команды
-                    else
+                    foreach (var command in possibleCommands)
                     {
-                        //сбросить таймер на сброс ожидания тела команды
-                        commandAwaitTimer.Stop();
-
-                        // если это только начатая команда, то добавляем в нее варианты команд из плагинов
-                        if (currentCommand.Count == 0)
-                        {
-                            foreach (var plugin in _plugins)
-                            {
-                                foreach (var command in plugin.Commands)
-                                {
-                                    var newCmdItem = new ProcessingCommand
-                                    {
-                                        PluginName = plugin.PluginName,
-                                        ExpectedCommand = command
-                                    };
-
-                                    currentCommand.Add(newCmdItem);
-                                }
-                            }
-                        }
-
-                        // и проверять на совпадение с списком ожидаемых команд
-                        ProcessNextToken(wordResult.word, ref currentCommand);
-
-                        if (currentCommand.Count < 1) // не нашел ничего
-                        {
-                            collectingIntent = false;
-                            audioOut.Speak("Команда не найдена");
-                            currentCommand = new List<ProcessingCommand>();
-                            commandAwaitTimer.Stop();
-                        }
-                        else if (currentCommand.Count == 1) // нашел команду
-                        {
-                            collectingIntent = false;
-                            // запускаем найденную команду
-                            var command = currentCommand.FirstOrDefault();
-
-                            if (command != null)
-                            {
-                                var foundPlugin = _plugins.FirstOrDefault(n => n.PluginName == command.PluginName);
-
-                                if (foundPlugin != null)
-                                {
-                                    var task = Task.Run(() => foundPlugin.Execute(command.ExpectedCommand.Name,
-                                        command.CommandTokens));
-                                }
-                            }
-
-                            currentCommand = new List<ProcessingCommand>();
-                            commandAwaitTimer.Stop();
-                        }
-                        else
-                        {
-                            commandAwaitTimer.Interval = _appConfig.NextWordAwaitTime * 1000;
-                            commandAwaitTimer.Start();
-                        }
+                        ExecuteCommand(command);
                     }
                 }
+                currentCommand.Clear();
             }
+        }
 
-            waveIn.DataAvailable += ProcessNewWords;
+        private static void ExecuteCommand(ProcessingCommand command)
+        {
+            if (command == null)
+                return;
 
-            waveIn.RecordingStopped += (s, a) => { waveIn.Dispose(); };
+            var foundPlugin = _plugins.FirstOrDefault(n => n.PluginName == command.PluginName);
 
-            waveIn.StartRecording();
-
-            audioOut.PlayFile(_appConfig.StartSound);
-            Console.WriteLine("\r\nAssistant started");
-
-            // wait for the program to stop
-            var command = "";
-
-            while (!command.Equals("exit", StringComparison.OrdinalIgnoreCase))
+            if (foundPlugin != null)
             {
-                command = Console.ReadLine();
+                Console.WriteLine("Executing command:");
+                Console.WriteLine(command.ToString());
+
+                var task = Task.Run(() =>
+                {
+                    var commandName = command.ExpectedCommand.Name;
+                    var commandTokens = command.CommandTokens;
+                    foundPlugin.Execute(commandName, commandTokens);
+                }).ConfigureAwait(true);
             }
-
-            waveIn.StopRecording();
-
-            //unload plugins
-            pluginLoader.UnloadAll();
-
-            configBuilder.SaveConfig();
+            // shouldn't be but just in case
+            else
+            {
+                Console.WriteLine($"Plugin {command.PluginName} not found for command:");
+                Console.WriteLine(command.ToString());
+            }
         }
 
         private static bool FuzzyEqual(string[] expectedWords, string newWord, int successRate)
@@ -387,6 +498,9 @@ namespace VoiceAssistant
             foreach (var word in expectedWords)
             {
                 var result = Fuzz.WeightedRatio(word.ToLower(), newWord.ToLower());
+
+                // some words are considered almost equal even if they are obviously not (like "Вася" and "я")
+                // so better check if the length difference is less than 2 times.
                 var lengthDifference = (float)word.Length / (float)newWord.Length;
 
                 if (lengthDifference <= 0.5 || lengthDifference >= 2)
@@ -410,20 +524,20 @@ namespace VoiceAssistant
                 var command = collectedCommands[i];
                 var curentPosition = command.CommandTokens.Count;
 
-                // если команда уже закончилась, то можно лишь добивать слова в последний параметр
+                // if command phrase is over it's only possible to add words to the previous parameter if any
                 if (command.ExpectedCommand.Tokens.Length <= curentPosition)
                 {
-                    // если последним идет параметр
+                    // if last token in the expected phrase is parameter
                     if (command.ExpectedCommand.Tokens.LastOrDefault().Type == TokenType.Parameter)
                     {
                         var lastParam = command.CommandTokens.LastOrDefault();
-                        // добавляем новое слово к параметру
+                        // add new word to the parameter
                         lastParam.Value[0] += " " + newTokenString;
                     }
-                    // если последней идет команда
+                    // if last token in the expected phrase is command
                     else
                     {
-                        //команда закончилась, а новые слова идут - что-то не то. убрать команду из списка.
+                        //phrase is over and new words are coming. Remove it from a pool
                         collectedCommands.RemoveAt(i);
                         i--;
                     }
@@ -433,7 +547,7 @@ namespace VoiceAssistant
 
                 var currentExpectedCommandWord = command.ExpectedCommand.Tokens[curentPosition];
 
-                // если это параметр, то добавить слово к текущему списку как параметр.                
+                // if it's a parameter than add new word as a parameter
                 if (currentExpectedCommandWord.Type == TokenType.Parameter)
                 {
                     var newToken = new Token
@@ -445,10 +559,10 @@ namespace VoiceAssistant
 
                     command.CommandTokens.Add(newToken);
                 }
-                // если это команда, то обработать
+                // if it's a command than process word
                 else if (currentExpectedCommandWord.Type == TokenType.Command)
                 {
-                    // если средний коэфф. совпадения больше заданного, то отмечаем как очередную часть команды (CommandToken)
+                    // if cmpliance rate id more than desired than it's a next phrase part
                     if (FuzzyEqual(currentExpectedCommandWord.Value, newTokenString,
                         currentExpectedCommandWord.SuccessRate))
                     {
@@ -461,13 +575,13 @@ namespace VoiceAssistant
 
                         command.CommandTokens.Add(newToken);
                     }
-                    // если это не похоже на команду и перед этим шел параметр, то прибавляем к параметру
+                    // if it doesn't look like a command - try to add it to the previous parameter if any
                     else if (command.CommandTokens.LastOrDefault()?.Type == TokenType.Parameter)
                     {
                         var lastParam = command.CommandTokens.LastOrDefault();
                         lastParam.Value[0] += " " + newTokenString;
                     }
-                    // иначе это слово не вписывается в текущую команду и команду надо убирать из списка потенциальных
+                    // or it's the wrng command. Remove it from a pool
                     else
                     {
                         collectedCommands.RemoveAt(i);

@@ -23,19 +23,38 @@ namespace PluginInterface
             var sb = new StringBuilder();
 
             if (Tokens != null && Tokens.Length > 0)
+            {
                 foreach (var token in Tokens)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(" ");
+                    }
+
                     if (token.Value.Length == 1)
                     {
-                        sb.Append($"{token.Value[0]} ");
+                        sb.Append($"{token.Value[0]}");
                     }
                     else
                     {
                         sb.Append("[");
+                        var nextElement = false;
 
-                        foreach (var word in token.Value) sb.Append($"{word},");
+                        foreach (var word in token.Value)
+                        {
+                            if (nextElement)
+                            {
+                                sb.Append(", ");
+                            }
 
-                        sb.Append("] ");
+                            sb.Append($"{word}");
+                            nextElement = true;
+                        }
+
+                        sb.Append("]");
                     }
+                }
+            }
 
             return sb.ToString().Trim();
         }
