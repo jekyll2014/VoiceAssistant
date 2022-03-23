@@ -1,7 +1,7 @@
 # VoiceAssistant
 Locally hosted voice assistant with plugin extension feature
 
-Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and based on the magnificient VOSK speech recognition engine (https://github.com/alphacep/vosk-api)
+Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the magnificient VOSK speech recognition engine (https://github.com/alphacep/vosk-api)
 
 Basically the ideas are:
 1) Locally hosted voice recognition and speech generation
@@ -9,26 +9,29 @@ Basically the ideas are:
 3) Easily configurable commands via JSON configs for each plugin
 4) Multi-language (just change settings for speech generation and model of speech recognition)
 
-Bugs:
-- exception on trying to play any .wav file async
-- all strings are hard-coded
+Thanks to:
+- VOSK voice recognition module: https://alphacephei.com/vosk/
+  language models: https://alphacephei.com/vosk/models
+- RHVoice Lab voices for Windows SAPI5: https://rhvoice.su/voices/
+- NAudio project: https://github.com/naudio/NAudio
+- Weighting string comparison alghoritm: https://github.com/JakeBayer/FuzzySharp
 
 ToDo:
-- move string into resources
-- command waiting end signal (bip sound)
-- MQTT connection for instance-to-instance command exchange
+- move core messages into resources
 - command validation all over plugins to avoid similar commands
-- check audio capture can be used by plugin
+- allow command injection from plugin (enable by config parameter)
 
 Plugins list planned:
-1. Hello
-2. Timer
-3. MPC-HC (VLC?) control with web interface
-4. Google/Yandex calendar task add
-5. Weather check
-6. Suburban trains (yandex)
-7. Currency rates
-8. Open web-site in browser
-9. Run program
-10. Message broadcast/announce to selected/all instances in the network (websocket or json + mqtt)
-11. Voice connection (interphone/speakerphone) between instances
+1. Hello (done)
+2. Timer (done)
+3. Open web-site in default/stand-alone browser (done)
+4. Run program (done)
+5. Currency rates (http://www.cbr.ru/scripts/XML_daily.asp) (done)
+
+6. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet)
+7. MPC-HC (VLC?) control with web interface (https://github.com/SJellicoe/MPC-Remote-Control-Server)
+8. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
+9. Weather check (yandex)
+10. Suburban trains (yandex)
+11. Message broadcast/announce to selected/all VoiceAssistant instances over the network (websocket + mqtt)
+12. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
