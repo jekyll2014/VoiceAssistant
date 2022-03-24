@@ -16,10 +16,10 @@ Plugins list planned:
 2. Timer (done)
 3. Open web-site in browser (done)
 4. Run program (done)
-5. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp http://iantonov.me/page/kak-poluchit-kurs-valjut-sredstvami-c)
+5. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp) (done)
+6. Application control using key code injection (suitable for MPC-HC, VLC, Foobar2000, etc)
 
-6. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
-7. MPC-HC (VLC?) control with web interface (https://github.com/SJellicoe/MPC-Remote-Control-Server)
+7. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
 8. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
 
 9. Weather check (yandex)
@@ -43,6 +43,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using PluginInterface;
 using Vosk;
+using NAudio.CoreAudioApi;
 
 namespace VoiceAssistant
 {
@@ -55,6 +56,8 @@ namespace VoiceAssistant
         private static List<ProcessingCommand> currentCommand = new List<ProcessingCommand>();
         private static bool collectingIntent = false;
         private static AudioOutSingleton audioOut;
+        private static WaveOut waveOut;
+        private static float _savedVolume = 0;
         private static VoskRecognizer voiceRecognition;
         private static Timer commandAwaitTimer;
         private static readonly object SyncRoot = new object();
@@ -66,7 +69,7 @@ namespace VoiceAssistant
             Console.WriteLine("Voice Assistant");
 
             // Init audio output device
-            var waveOut = InitAudioOutput();
+            waveOut = InitAudioOutput();
 
             // Init audio input device
             var waveIn = InitAudioInput();
@@ -371,6 +374,9 @@ namespace VoiceAssistant
 
                     if (recognize)
                     {
+                        _savedVolume = GetMasterVolume();
+                        SetMasterVolume(0.1f);
+
                         // add all plugins command to command pool (to exclude unmatched later)
                         currentCommand.Clear();
 
@@ -407,6 +413,7 @@ namespace VoiceAssistant
                     if (currentCommand.Count < 1)
                     {
                         collectingIntent = false;
+                        SetMasterVolume(_savedVolume);
                         audioOut.Speak(_appConfig.CommandNotRecognizedMessage);
                         Console.WriteLine(_appConfig.CommandNotRecognizedMessage);
                         currentCommand.Clear();
@@ -418,6 +425,7 @@ namespace VoiceAssistant
                         if (command.CommandTokens.Count == command.ExpectedCommand.Tokens.Count())
                         {
                             collectingIntent = false;
+                            SetMasterVolume(_savedVolume);
                             ExecuteCommand(command);
                             currentCommand.Clear();
                         }
@@ -437,6 +445,8 @@ namespace VoiceAssistant
             lock (SyncRoot)
             {
                 collectingIntent = false;
+                SetMasterVolume(_savedVolume);
+
                 // shouldn't be possible but just in case
                 if (currentCommand.Count < 1)
                 {
@@ -461,11 +471,13 @@ namespace VoiceAssistant
                             Console.WriteLine("----");
                         }
                     }
+
                     foreach (var command in possibleCommands)
                     {
                         ExecuteCommand(command);
                     }
                 }
+
                 currentCommand.Clear();
             }
         }
@@ -593,6 +605,23 @@ namespace VoiceAssistant
                     }
                 }
             }
+        }
+
+        private static void SetMasterVolume(float level)
+        {
+            MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
+            MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            //string currVolume = "MasterPeakVolume : " + defaultDevice.AudioMeterInformation.MasterPeakValue.ToString();
+            var range = defaultDevice.AudioEndpointVolume.VolumeRange;
+            defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = level;
+        }
+
+        private static float GetMasterVolume()
+        {
+            MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
+            MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+
+            return defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
         }
     }
 }

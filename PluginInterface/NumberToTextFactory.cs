@@ -1,6 +1,6 @@
 ﻿namespace PluginInterface
 {
-    public static class NumberToTextConvertor
+    public static class NumberToTextFactory
     {
         public static INumberToText GetNumberToTextConvertor(string culture)
         {

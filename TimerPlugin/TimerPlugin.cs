@@ -50,7 +50,7 @@ namespace TimerPlugin
             var secToken = command.GetParameter("%seconds%", commandTokens);
             var minCount = 0;
 
-            var stringToNumberConvertor = TextToNumberConvertor.GetTextToNumberConvertor(CurrentCulture);
+            var stringToNumberConvertor = TextToNumberFactory.GetTextToNumberConvertor(CurrentCulture);
 
             if (minToken != null)
             {
@@ -72,7 +72,7 @@ namespace TimerPlugin
             {
                 var delay = $"{minCount}+{secCount}";
 
-                var NumberToStringConvertor = NumberToTextConvertor.GetNumberToTextConvertor(CurrentCulture);
+                var NumberToStringConvertor = NumberToTextFactory.GetNumberToTextConvertor(CurrentCulture);
 
 
                 if (command.isStopCommand)
