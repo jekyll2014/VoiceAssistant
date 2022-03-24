@@ -80,7 +80,8 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
 
 -  "AllowPluginsToListenToWords": true - plugins MAY have (none of mines uses it) an access to the recogized word stream any time they wish. If you don't need it - turn it off for safety sake.
 
-## The plugins settings are different for every single plugin but there are common parts recommended^
+## The plugins settings are different for every single plugin but there are common parts recommended:
+```
   // this is a definition of all commands available for the plugin
   "Commands": [
   
@@ -99,9 +100,11 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
         }
       ]
     }
-  
+```
+
   // and here is more complicated command with parameters for the timer
-    {
+```
+	{
       "Response": "{1} minutes {2} seconds timer stopped",  // response string has {x} marks to put data to before pronouncing it. This is up to plugin developer to use them and user must follow the developer recomendations using them.
       "isStopCommand": true,  // this is a custom parameter I use to separate STOP commands from START commands. I found it handy for development of this exact plugin but it's just the way I did here.
       "Name": "Stop timer minutes, seconds",  // just a name for readability
@@ -160,5 +163,6 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
       ]
     }
   ]
+```
 
 ### Frankly speaking a developer should only provide this command structure for the core module to setup the command recognition. But the actual processing logic can be any. One can even prive cthe core with empty command definition and attach to the audio stream or text stream and process it himself.
