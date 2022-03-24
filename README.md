@@ -21,17 +21,24 @@ ToDo:
 - command validation all over plugins to avoid similar commands
 - allow command injection from plugin (enable by config parameter)
 
+ToDo:
+- move core messages into resources
+- command validation all over plugins to avoid similar commands
+- allow command injection from plugin (enable by config parameter)
+
 Plugins list planned:
 1. Hello (done)
 2. Timer (done)
-3. Open web-site in default/stand-alone browser (done)
+3. Open web-site in browser (done)
 4. Run program (done)
-5. Currency rates (http://www.cbr.ru/scripts/XML_daily.asp) (done)
+5. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp) (done)
+6. Application control using key code injection (suitable for MPC-HC, VLC, Foobar2000, etc)
 
-6. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet)
-7. MPC-HC (VLC?) control with web interface (https://github.com/SJellicoe/MPC-Remote-Control-Server)
+7. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet)
 8. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
+
 9. Weather check (yandex)
 10. Suburban trains (yandex)
-11. Message broadcast/announce to selected/all VoiceAssistant instances over the network (websocket + mqtt)
+11. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
 12. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
+
