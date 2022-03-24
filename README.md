@@ -21,11 +21,6 @@ ToDo:
 - command validation all over plugins to avoid similar commands
 - allow command injection from plugin (enable by config parameter)
 
-ToDo:
-- move core messages into resources
-- command validation all over plugins to avoid similar commands
-- allow command injection from plugin (enable by config parameter)
-
 Plugins list planned:
 1. Hello (done)
 2. Timer (done)
