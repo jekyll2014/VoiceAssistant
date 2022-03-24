@@ -1,29 +1,29 @@
-### VoiceAssistant
+# VoiceAssistant
 Locally hosted voice assistant with plugin extension feature
 
 Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the magnificient VOSK speech recognition engine (https://github.com/alphacep/vosk-api)
 
-# Basically the ideas are:
+### Basically the ideas are:
 1) Locally hosted voice recognition and speech generation
 2) Plugin extensibility model
 3) Easily configurable commands via JSON configs for each plugin
 4) Multi-language (just change settings for the speech generation and model of speech recognition, than rewrite plugin commands to your language)
 5) Almost no CPU load on low power Intel Core i5 3rd generation. Should even work on Intel Atom.
 
-# Thanks to:
+### Thanks to:
 - VOSK voice recognition module: https://alphacephei.com/vosk/
   language models: https://alphacephei.com/vosk/models
 - RHVoice Lab voices for Windows SAPI5: https://rhvoice.su/voices/
 - NAudio project: https://github.com/naudio/NAudio
 - Weighting string comparison alghoritm: https://github.com/JakeBayer/FuzzySharp
 
-# ToDo:
+### ToDo:
 - move core messages into resources
 - command validation all over plugins to avoid similar commands
 - allow command injection from plugin (enable by config parameter)
 - refactor settings names
 
-# Plugins list:
+### Plugins list:
 - Hello
 - Timer (done)
 - Open web-site in browser (done)
@@ -31,7 +31,7 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
 - Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp) (done)
 - Application control using key code injection (suitable for MPC-HC, VLC, Foobar2000, etc)
 
-# Plugins list planned:
+### Plugins list planned:
 - Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet)
 - Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
 - Weather check (yandex?)
@@ -161,4 +161,4 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
     }
   ]
 
-# Frankly speaking a developer should only provide this command structure for the core module to setup the command recognition. But the actual processing logic can be any. One can even prive cthe core with empty command definition and attach to the audio stream or text stream and process it himself.
+### Frankly speaking a developer should only provide this command structure for the core module to setup the command recognition. But the actual processing logic can be any. One can even prive cthe core with empty command definition and attach to the audio stream or text stream and process it himself.
