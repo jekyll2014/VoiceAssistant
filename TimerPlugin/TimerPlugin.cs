@@ -16,7 +16,7 @@ namespace TimerPlugin
         private readonly string _timerNotFound;
         private readonly List<(string, Timer)> _timers = new List<(string, Timer)>();
 
-        public TimerPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
+        public TimerPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
             var configBuilder = new Config<TimerPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
             if (!File.Exists($"{PluginPath}\\{PluginConfigFile}"))
@@ -50,15 +50,17 @@ namespace TimerPlugin
             var secToken = command.GetParameter("%seconds%", commandTokens);
             var minCount = 0;
 
+            var stringToNumberConvertor = TextToNumberConvertor.GetTextToNumberConvertor(CurrentCulture);
+
             if (minToken != null)
             {
-                minCount = TextToNumberRus.GetNumber(minToken.Value[0], minToken.SuccessRate);
+                minCount = stringToNumberConvertor.ConvertStringToNumber(minToken.Value[0], minToken.SuccessRate);
             }
 
             var secCount = 0;
             if (secToken != null)
             {
-                secCount = TextToNumberRus.GetNumber(secToken.Value[0], secToken.SuccessRate);
+                secCount = stringToNumberConvertor.ConvertStringToNumber(secToken.Value[0], secToken.SuccessRate);
             }
 
             var response = string.Empty;
@@ -70,6 +72,9 @@ namespace TimerPlugin
             {
                 var delay = $"{minCount}+{secCount}";
 
+                var NumberToStringConvertor = NumberToTextConvertor.GetNumberToTextConvertor(CurrentCulture);
+
+
                 if (command.isStopCommand)
                 {
                     var timer = _timers.FirstOrDefault(n => n.Item2.Enabled && n.Item1 == delay);
@@ -80,8 +85,9 @@ namespace TimerPlugin
                         _timers.Remove(timer);
                         response = command.Response;
                         // string.Empty is used to avoid using {0} int templates
-                        response = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
-                            NumberToTextRus.Str(secCount));
+                        response = string.Format(command.Response, string.Empty, 
+                            NumberToStringConvertor.ConvertNumberToString(minCount),
+                            NumberToStringConvertor.ConvertNumberToString(secCount));
                     }
                     else
                     {
@@ -112,8 +118,9 @@ namespace TimerPlugin
                     t.Start();
 
                     // string.Empty is used to avoid using {0} int templates
-                    response = string.Format(command.Response, string.Empty, NumberToTextRus.Str(minCount),
-                        NumberToTextRus.Str(secCount));
+                    response = string.Format(command.Response, string.Empty, 
+                        NumberToStringConvertor.ConvertNumberToString(minCount),
+                        NumberToStringConvertor.ConvertNumberToString(secCount));
                 }
             }
 

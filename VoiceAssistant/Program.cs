@@ -272,7 +272,7 @@ namespace VoiceAssistant
             var pluginFolder = AppDomain.CurrentDomain.BaseDirectory + _appConfig.PluginsFolder;
 
             //Load all plugins from a folder
-            var plugins = pluginLoader.LoadAll(pluginFolder, _appConfig.PluginFileMask, audioOut);
+            var plugins = pluginLoader.LoadAll(pluginFolder, _appConfig.PluginFileMask, audioOut, _appConfig.SpeakerCulture);
             Console.WriteLine($"\r\n{plugins.Count} plugin(s) loaded");
 
             foreach (var plugin in plugins)
@@ -414,9 +414,13 @@ namespace VoiceAssistant
                     // the only command found
                     else if (currentCommand.Count == 1)
                     {
-                        collectingIntent = false;
-                        ExecuteCommand(currentCommand.FirstOrDefault());
-                        currentCommand.Clear();
+                        var command = currentCommand.FirstOrDefault();
+                        if (command.CommandTokens.Count == command.ExpectedCommand.Tokens.Count())
+                        {
+                            collectingIntent = false;
+                            ExecuteCommand(command);
+                            currentCommand.Clear();
+                        }
                     }
                     // still there are multiple commands possible
                     else

@@ -10,7 +10,7 @@ namespace HelloPlugin
     {
         private readonly HelloPluginCommand[] HelloCommands;
 
-        public HelloPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
+        public HelloPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
             var configBuilder = new Config<HelloPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
             if (!File.Exists($"{PluginPath}\\{PluginConfigFile}"))

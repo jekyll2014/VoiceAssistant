@@ -20,7 +20,7 @@ namespace BrowserPlugin
         private readonly string _canNotRun;
         private readonly string _alreadyRunning;
 
-        public BrowserPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
+        public BrowserPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
             var configBuilder = new Config<BrowserPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
 

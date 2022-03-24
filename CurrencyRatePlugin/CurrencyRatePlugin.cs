@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 
 using PluginInterface;
 
@@ -18,7 +16,7 @@ namespace CurrencyRatePlugin
         private readonly string CurrencyServiceUrl;
         private readonly string CurrencyDecimalSeparatorWord;
 
-        public CurrencyRatePlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
+        public CurrencyRatePlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
             var configBuilder = new Config<CurrencyRatePluginSettings>($"{PluginPath}\\{PluginConfigFile}");
             if (!File.Exists($"{PluginPath}\\{PluginConfigFile}"))

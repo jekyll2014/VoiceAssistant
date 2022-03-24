@@ -17,7 +17,7 @@ namespace RunProgramPlugin
         private readonly string _canNotRun;
         private readonly string _alreadyRunning;
 
-        public RunProgramPlugin(IAudioOutSingleton audioOut, string pluginPath) : base(audioOut, pluginPath)
+        public RunProgramPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
             var configBuilder = new Config<RunProgramPluginSettings>($"{PluginPath}\\{PluginConfigFile}");
 

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PluginInterface
@@ -57,7 +58,13 @@ namespace PluginInterface
             try
             {
                 File.WriteAllText(_configFileName,
-                    JsonConvert.SerializeObject(ConfigStorage, Formatting.Indented));
+                    JsonConvert.SerializeObject(ConfigStorage, Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings()
+                    {
+                        Converters = new List<Newtonsoft.Json.JsonConverter>
+                        {
+                            new Newtonsoft.Json.Converters.StringEnumConverter()
+                        }
+                    }));
             }
             catch
             {
