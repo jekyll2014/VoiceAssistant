@@ -83,7 +83,7 @@ namespace AppControlPlugin
                 },
                 ApplicationId = "mpc-hc64",
                 KeyNames = new[] { "VK_SPACE" },
-                Response = "Запустил"
+                Response = "фильм запущен"
             },
             new AppControlPluginCommand
             {
@@ -105,7 +105,7 @@ namespace AppControlPlugin
                 },
                 ApplicationId = "mpc-hc64",
                 KeyNames = new[] { "VK_DECIMAL" },
-                Response = "Остановил"
+                Response = "фильм остановлен"
             },
             new AppControlPluginCommand
             {
@@ -144,7 +144,7 @@ namespace AppControlPlugin
                     {
                         SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = new[] { "фильм" }
+                        Value = new[] { "сделай" }
                     },
                     new Token
                     {
@@ -166,7 +166,7 @@ namespace AppControlPlugin
                     {
                         SuccessRate = 90,
                         Type = TokenType.Command,
-                        Value = new[] { "фильм" }
+                        Value = new[] { "сделай" }
                     },
                     new Token
                     {
