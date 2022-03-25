@@ -165,4 +165,4 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
   ]
 ```
 
-### Frankly speaking a developer should only provide this command structure for the core module to setup the command recognition. But the actual processing logic can be any. One can even prive cthe core with empty command definition and attach to the audio stream or text stream and process it himself.
+### Frankly speaking a developer should only provide this command structure for the core module to setup the command recognition. But the actual processing logic can be any. One can even provide core with empty command definition and attach to the audio stream or text stream and process it himself.
