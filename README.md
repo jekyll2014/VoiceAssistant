@@ -52,9 +52,9 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
 
 -  "CallSign": [ "Baby" ] - list of the call signs to wake assistant up. Could be one or several. Could have several similar versions of one word if you found the recognition misses too often.
 
--  "DefaultSuccessRate": 90 - default success rate for soft string complarison. Not used really since all the commands should have it.
+-  "DefaultSuccessRate": 90 - default success rate for soft string complarison. Only used for call sign recognition for now.
 
--  "VoiceName": "" - voice model name for TextToSpeech. The list is printed out on start up.
+-  "VoiceName": "" - voice model name for TextToSpeech. The list is printed out on start up. More voices available at https://github.com/RHVoice/RHVoice/blob/master/doc/en/Binaries.md
 
 -  "SpeakerCulture": "en-US" - if the VoiceName is not set this culture will be used to select any suitable voice model for TextToSpeech. 
 
