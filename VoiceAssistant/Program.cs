@@ -447,18 +447,17 @@ namespace VoiceAssistant
                 collectingIntent = false;
                 SetMasterVolume(_savedVolume);
 
-                // shouldn't be possible but just in case
-                if (currentCommand.Count < 1)
+                // filter out incomplete commands
+                var possibleCommands = currentCommand
+                    .Where(n => n.CommandTokens.Count == n.ExpectedCommand.Tokens.Count()).ToArray();
+
+                if (possibleCommands.Count() < 1)
                 {
                     audioOut.PlayFile(_appConfig.MisrecognitionSound);
                     Console.WriteLine(_appConfig.CommandNotFoundMessage);
                 }
                 else
                 {
-                    // filter out incomplete commands
-                    var possibleCommands = currentCommand
-                        .Where(n => n.CommandTokens.Count == n.ExpectedCommand.Tokens.Count()).ToArray();
-
                     // multiple commands found
                     if (possibleCommands.Count() > 1)
                     {
