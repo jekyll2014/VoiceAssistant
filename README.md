@@ -25,16 +25,16 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
 
 ### Plugins list:
 - Hello
-- Timer (done)
-- Open web-site in browser (done)
-- Run program (done)
-- Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp) (done)
+- Timer
+- Open web-site in browser
+- Run program
+- Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp)
 - Application control using key code injection (suitable for MPC-HC, VLC, Foobar2000, etc)
 
 ### Plugins list planned:
 - Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet)
 - Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
-- Weather check (yandex?)
+- Weather check (https://openweathermap.org/api)
 - Suburban trains (yandex?)
 - Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
 - Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
