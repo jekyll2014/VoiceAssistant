@@ -422,7 +422,11 @@ namespace VoiceAssistant
                     else if (currentCommand.Count == 1)
                     {
                         var command = currentCommand.FirstOrDefault();
-                        if (command.CommandTokens.Count == command.ExpectedCommand.Tokens.Count())
+
+                        // if a command is of the same length and the last token is not of Parameter type
+                        // Parameter could be appended with new words within word-to-word timer
+                        if (command.CommandTokens.Count == command.ExpectedCommand.Tokens.Count()
+                            && command.CommandTokens.LastOrDefault().Type != TokenType.Parameter)
                         {
                             collectingIntent = false;
                             SetMasterVolume(_savedVolume);
