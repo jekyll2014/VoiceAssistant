@@ -1,43 +1,128 @@
-﻿
-using System;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace PluginInterface
 {
-    public class NumberToTextRus : INumberToText
+    public class NumberToTextGeneric : INumberToText
     {
-        //Наименования сотен
-        private readonly string[] _hundreds =
-            {
-            "", "сто ", "двести ", "триста ", "четыреста ",
-            "пятьсот ", "шестьсот ", "семьсот ", "восемьсот ", "девятьсот "
-        };
+        private const string _settingsConfigFile = "GenericNumberSettings.json";
 
-        //Наименования десятков
-        private readonly string[] _tens =
-            {
-            "", "десять ", "двадцать ", "тридцать ", "сорок ", "пятьдесят ",
-            "шестьдесят ", "семьдесят ", "восемьдесят ", "девяносто "
-        };
+        private readonly string _zero;
+        private readonly string _oneFemale;
+        private readonly string _twoFemale;
+        private readonly string _minus;
+        private readonly string[] _frac20;
+        private readonly string[] _hundreds;
+        private readonly string[] _tens;
+        private readonly string[] _OneTwoFiveThousand;
+        private readonly string[] _OneTwoFiveMillion;
+        private readonly string[] _OneTwoFiveBillion;
+        private readonly string[] _OneTwoFiveTrillion;
+        private readonly string[] _OneTwoFiveQuadrillion;
 
-        private readonly string[] _frac20 =
+        public NumberToTextGeneric()
+        {
+            var configBuilder = new Config<GenericNumberSettings>($"{_settingsConfigFile}");
+            if (!File.Exists($"{_settingsConfigFile}"))
             {
-                "", "один ", "два ", "три ", "четыре ", "пять ", "шесть ",
-                "семь ", "восемь ", "девять ", "десять ", "одиннадцать ",
-                "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
-                "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать "
+                configBuilder.SaveConfig();
+            }
+
+            var configStorage = configBuilder.ConfigStorage;
+
+            _minus = configStorage.Minus;
+            _zero = configStorage.Zero;
+            _oneFemale = configStorage.OneFemale;
+            _twoFemale = configStorage.TwoFemale;
+
+            _frac20 = new[]
+            {
+                "",
+                configStorage.One,
+                configStorage.Two,
+                configStorage.Three,
+                configStorage.Four,
+                configStorage.Five,
+                configStorage.Six,
+                configStorage.Seven,
+                configStorage.Eight,
+                configStorage.Nine,
+                configStorage.Ten,
+                configStorage.Elleven,
+                configStorage.Twelve,
+                configStorage.Thirteen,
+                configStorage.Fourteen,
+                configStorage.Fifteen,
+                configStorage.Sixteen,
+                configStorage.Seventeen,
+                configStorage.Eighteen,
+                configStorage.Nineteen,
             };
 
-        private readonly string[] _OneTwoFiveThousand = { "тысяча", "тысячи", "тысяч" };
-        private readonly string[] _OneTwoFiveMillion = { "миллион", "миллиона", "миллионов" };
-        private readonly string[] _OneTwoFiveBillion = { "миллиард", "миллиарда", "миллиардов" };
-        private readonly string[] _OneTwoFiveTrillion = { "триллион", "триллиона", "триллионов" };
-        private readonly string[] _OneTwoFiveQuadrillion = { "квадриллион", "квадриллиона", "квадриллионов" };
+            _tens = new[]
+            {
+                "",
+                configStorage.Ten,
+                configStorage.Twenty,
+                configStorage.Thirty,
+                configStorage.Forty,
+                configStorage.Fifty,
+                configStorage.Sixty,
+                configStorage.Seventy,
+                configStorage.Eighty,
+                configStorage.Ninety
+            };
 
-        private readonly string _zero = "ноль ";
-        private readonly string _oneFemale = "одна ";
-        private readonly string _twoFemale = "две ";
-        private readonly string _minus = "минус ";
+            _hundreds = new[]
+            {
+                "",
+                configStorage.OneHundred,
+                configStorage.TwoHundred,
+                configStorage.ThreeHundred,
+                configStorage.FourHundred,
+                configStorage.FiveHundred,
+                configStorage.SixHundred,
+                configStorage.SevenHundred,
+                configStorage.EightHundred,
+                configStorage.NineHundred,
+            };
+
+            _OneTwoFiveThousand = new[]
+            {
+                configStorage.OneThousand,
+                configStorage.TwoThousand,
+                configStorage.FiveThousand
+            };
+
+            _OneTwoFiveMillion = new[]
+            {
+                configStorage.OneMillion,
+                configStorage.TwoMillion,
+                configStorage.FiveMillion
+            };
+
+            _OneTwoFiveBillion = new[]
+            {
+                configStorage.OneBillion,
+                configStorage.TwoBillion,
+                configStorage.FiveBillion
+            };
+
+            _OneTwoFiveTrillion = new[]
+            {
+                configStorage.OneTrillion,
+                configStorage.TwoTrillion,
+                configStorage.FiveTrillion
+            };
+
+            _OneTwoFiveQuadrillion = new[]
+            {
+                configStorage.OneQuadrillion,
+                configStorage.TwoQuadrillion,
+                configStorage.FiveQuadrillion
+            };
+        }
 
         /// <summary>
         ///     Перевод целого числа в строку
@@ -151,3 +236,11 @@ namespace PluginInterface
         }
     }
 }
+
+
+
+
+
+
+
+

@@ -2,7 +2,7 @@
 {
     public class TextToNumberEmpty : ITextToNumber
     {
-        public int ConvertStringToNumber(string numberString, int ratio = 100)
+        public long ConvertStringToNumber(string numberString, int ratio = 100)
         {
             return 0;
         }

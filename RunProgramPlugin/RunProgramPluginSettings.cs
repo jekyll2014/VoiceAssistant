@@ -2,14 +2,6 @@
 
 namespace RunProgramPlugin
 {
-    public class RunProgramPluginCommand : PluginCommand
-    {
-        public string Response = "";
-        public string CommandLine = "";
-        public bool IsStopCommand = false;
-        public bool AllowMultiple = false;
-    }
-
     public class RunProgramPluginSettings
     {
         //[JsonProperty(Required = Required.Always)]
@@ -18,7 +10,7 @@ namespace RunProgramPlugin
         public string CanNotRun = "не удалось запустить";
         public string AlreadyRunning = "уже запущен";
 
-        public RunProgramPluginCommand[] Commands { get; set; } =
+        public RunProgramPluginCommand[] Commands =
         {
             new RunProgramPluginCommand
             {

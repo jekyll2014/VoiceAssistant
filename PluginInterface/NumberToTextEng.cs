@@ -5,29 +5,45 @@ namespace PluginInterface
     public class NumberToTextEng : INumberToText
     {
         //converts any number between 0 & INT_MAX (2,147,483,647)
-        public string ConvertNumberToString(int val)
+        public string ConvertNumberToString(long val)
         {
+            var result = string.Empty;
+
             if (val < 0)
-                throw new NotSupportedException("negative numbers not supported");
+            {
+                result = "minus ";
+                val = -val;
+            }
+
             if (val == 0)
-                return "zero";
-            if (val < 10)
-                return ConvertDigitToString(val);
-            if (val < 20)
-                return ConvertTeensToString(val);
-            if (val < 100)
-                return ConvertHighTensToString(val);
-            if (val < 1000)
-                return ConvertBigNumberToString(val, (int)1e2, "hundred");
-            if (val < 1e6)
-                return ConvertBigNumberToString(val, (int)1e3, "thousand");
-            if (val < 1e9)
-                return ConvertBigNumberToString(val, (int)1e6, "million");
-            //if (n < 1e12)
-            return ConvertBigNumberToString(val, (int)1e9, "billion");
+                result = "zero";
+            else if (val < 10)
+                result += ConvertDigitToString(val);
+            else if (val < 20)
+                result += ConvertTeensToString(val);
+            else if (val < 100)
+                result += ConvertHighTensToString(val);
+            else if (val < 1000)
+                result += ConvertBigNumberToString(val, (long)1e2, "hundred");
+            else if (val < 1e6)
+                result += ConvertBigNumberToString(val, (long)1e3, "thousand");
+            else if (val < 1e9)
+                result += ConvertBigNumberToString(val, (long)1e6, "million");
+            else if (val < 1e12)
+                result += ConvertBigNumberToString(val, (long)1e9, "billion");
+            else if (val < 1e12)
+                result += ConvertBigNumberToString(val, (long)1e12, "trillion");
+            else if (val < 1e12)
+                result += ConvertBigNumberToString(val, (long)1e15, "quadrillion");
+            else if (val < 1e12)
+                result += ConvertBigNumberToString(val, (long)1e18, "quintillion");
+            else
+                return "more than quintillion";
+
+            return result;
         }
 
-        private string ConvertDigitToString(int i)
+        private string ConvertDigitToString(long i)
         {
             switch (i)
             {
@@ -47,7 +63,7 @@ namespace PluginInterface
         }
 
         //assumes a number between 10 & 19
-        private string ConvertTeensToString(int n)
+        private string ConvertTeensToString(long n)
         {
             switch (n)
             {
@@ -67,9 +83,9 @@ namespace PluginInterface
         }
 
         //assumes a number between 20 and 99
-        private string ConvertHighTensToString(int n)
+        private string ConvertHighTensToString(long n)
         {
-            int tensDigit = (int)(Math.Floor((double)n / 10.0));
+            long tensDigit = (long)(Math.Floor((double)n / 10.0));
 
             string tensStr;
             switch (tensDigit)
@@ -91,19 +107,19 @@ namespace PluginInterface
         }
 
         // Use this to convert any integer bigger than 99
-        private string ConvertBigNumberToString(int n, int baseNum, string baseNumStr)
+        private string ConvertBigNumberToString(long n, long baseNum, string baseNumStr)
         {
             // special case: use commas to separate portions of the number, unless we are in the hundreds
             string separator = (baseNumStr != "hundred") ? ", " : " ";
 
             // Strategy: translate the first portion of the number, then recursively translate the remaining sections.
             // Step 1: strip off first portion, and convert it to string:
-            int bigPart = (int)(Math.Floor((double)n / baseNum));
+            long bigPart = (long)(Math.Floor((double)n / baseNum));
             string bigPartStr = ConvertNumberToString(bigPart) + " " + baseNumStr;
             // Step 2: check to see whether we're done:
             if (n % baseNum == 0) return bigPartStr;
             // Step 3: concatenate 1st part of string with recursively generated remainder:
-            int restOfNumber = n - bigPart * baseNum;
+            long restOfNumber = n - bigPart * baseNum;
             return bigPartStr + separator + ConvertNumberToString(restOfNumber);
         }
     }

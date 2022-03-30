@@ -9,7 +9,7 @@
             else if (culture.StartsWith("en-"))
                 return new NumberToTextEng();
             else
-                return new NumberToTextEmpty();
+                return new NumberToTextGeneric();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PluginInterface
             {"плюс", true}
         };
 
-        private readonly Dictionary<string, int> Numbers = new Dictionary<string, int>
+        private readonly Dictionary<string, long> Numbers = new Dictionary<string, long>
         {
             {"ноль", 0},
             {"один", 1},
@@ -54,26 +54,39 @@ namespace PluginInterface
             {"семьсот", 700},
             {"восемьсот", 800},
             {"девятьсот", 900},
+            {"тысяча", 1000},
             {"миллион", 1000000},
-            {"миллиард", 1000000000}
+            {"миллиард", 1000000000},
+            {"триллион", 1000000000000},
+            {"квадриллион", 1000000000000},
         };
 
-        private readonly Dictionary<string, int> Multipliers = new Dictionary<string, int>
+        private readonly Dictionary<string, long> Multipliers = new Dictionary<string, long>
         {
             {"тысяча", 1000},
             {"тысячи", 1000},
             {"тысяч", 1000},
+
             {"миллион", 1000000},
             {"миллиона", 1000000},
             {"миллионов", 1000000},
+
             {"миллиард", 1000000000},
             {"миллиарда", 1000000000},
-            {"миллиардов", 1000000000}
+            {"миллиардов", 1000000000},
+
+            {"триллион", 1000000000000},
+            {"триллиона", 1000000000000},
+            {"триллионов", 1000000000000},
+
+            {"квадриллион", 1000000000000000},
+            {"квадриллиона", 1000000000000000},
+            {"квадриллионов", 1000000000000000}
         };
 
-        public int ConvertStringToNumber(string numberString, int ratio = 100)
+        public long ConvertStringToNumber(string numberString, int ratio = 100)
         {
-            int result = 0;
+            long result = 0;
             var positive = true;
             var i = 0;
             var tokens = numberString.ToLower().Split(' ');

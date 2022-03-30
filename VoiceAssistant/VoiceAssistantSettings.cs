@@ -3,25 +3,25 @@
     public class VoiceAssistantSettings
     {
         //[JsonProperty(Required = Required.Always)]
-        public string ModelFolder { get; set; } = "model";
-        public string SelectedAudioInDevice { get; set; } = "";
-        public string SelectedAudioOutDevice { get; set; } = "";
-        public int AudioInSampleRate { get; set; } = 16000;
-        public int AudioOutSampleRate { get; set; } = 44100;
-        public string[] CallSign { get; set; } = {"Вася"};
-        public int DefaultSuccessRate { get; set; } = 90;
-        public string VoiceName { get; set; } = "Aleksandr";
-        public string SpeakerCulture { get; set; } = "ru-RU";
-        public string PluginsFolder { get; set; } = "plugins";
-        public string PluginFileMask { get; set; } = "*Plugin.dll";
-        public string StartSound { get; set; } = "AssistantStart.wav";
-        public string MisrecognitionSound { get; set; } = "Misrecognition.wav";
-        public int CommandAwaitTime { get; set; } = 10;
-        public int NextWordAwaitTime { get; set; } = 3;
-        public int VoskLogLevel { get; set; } = -1;
-        public string CommandNotRecognizedMessage { get; set; } = "Команда не распознана";
-        public string CommandNotFoundMessage { get; set; } = "Команда не найдена";
-        public bool AllowPluginsToListenToSound { get; set; } = false;
-        public bool AllowPluginsToListenToWords { get; set; } = false;
+        public string ModelFolder = "model";
+        public string SelectedAudioInDevice = "";
+        public string SelectedAudioOutDevice = "";
+        public int AudioInSampleRate = 16000;
+        public int AudioOutSampleRate = 44100;
+        public string[] CallSign = { "Вася" };
+        public int DefaultSuccessRate = 90;
+        public string VoiceName = "";
+        public string SpeakerCulture = "ru-RU";
+        public string PluginsFolder = "plugins";
+        public string PluginFileMask = "*Plugin.dll";
+        public string StartSound = "AssistantStart.wav";
+        public string MisrecognitionSound = "Misrecognition.wav";
+        public int CommandAwaitTime = 10;
+        public int NextWordAwaitTime = 3;
+        public int VoskLogLevel = -1;
+        public string CommandNotRecognizedMessage = "Команда не распознана";
+        public string CommandNotFoundMessage = "Команда не найдена";
+        public bool AllowPluginsToListenToSound = false;
+        public bool AllowPluginsToListenToWords = false;
     }
 }

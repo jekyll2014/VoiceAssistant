@@ -2,12 +2,6 @@
 
 namespace TimerPlugin
 {
-    public class TimerPluginCommand : PluginCommand
-    {
-        public string Response = "";
-        public bool isStopCommand = false;
-    }
-
     public class TimerPluginSettings
     {
         //[JsonProperty(Required = Required.Always)]
@@ -15,7 +9,7 @@ namespace TimerPlugin
         public string IncorrectTime = "Некорректное время";
         public string TimerNotFound = "Таймер не найден";
 
-        public TimerPluginCommand[] Commands { get; set; } =
+        public TimerPluginCommand[] Commands =
         {
             new TimerPluginCommand
             {

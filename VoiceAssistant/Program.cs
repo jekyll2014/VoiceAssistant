@@ -10,6 +10,8 @@ ToDo:
 - move core messages into resources
 - command validation all over plugins to avoid similar commands
 - allow command injection from plugin (enable by config parameter)
+- console commands like "help", "commands", "log on/off"
+- core logging and corresponding settings parameter
 
 Plugins list planned:
 1. Hello (done)
@@ -501,7 +503,16 @@ namespace VoiceAssistant
                 {
                     var commandName = command.ExpectedCommand.Name;
                     var commandTokens = command.CommandTokens;
-                    foundPlugin.Execute(commandName, commandTokens);
+
+                    try
+                    {
+                        foundPlugin.Execute(commandName, commandTokens);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to execute plugin command: {command.ToString()}");
+                        Console.WriteLine($"Exception details: {ex.Message}");
+                    }
                 }).ConfigureAwait(true);
             }
             // shouldn't be but just in case

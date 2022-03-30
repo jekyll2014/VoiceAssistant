@@ -2,20 +2,13 @@
 
 namespace CurrencyRatePlugin
 {
-    public class CurrencyRatePluginCommand : PluginCommand
-    {
-        public string CurencyCode = "";
-        public int RateDecimalRound = 2;
-        public string Response = "";
-    }
-
     public class CurrencyRatePluginSettings
     {
         public string CurrencyServiceUrl = "http://www.cbr.ru/scripts/XML_daily.asp";
         public string CurrencyDecimalSeparatorWord = "точка";
 
         //[JsonProperty(Required = Required.Always)]
-        public CurrencyRatePluginCommand[] Commands { get; set; } =
+        public CurrencyRatePluginCommand[] Commands =
         {
             new CurrencyRatePluginCommand
             {

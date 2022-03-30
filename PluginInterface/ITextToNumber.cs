@@ -2,6 +2,6 @@
 {
     public interface ITextToNumber
     {
-        public abstract int ConvertStringToNumber(string numberString, int ratio = 100);
+        public abstract long ConvertStringToNumber(string numberString, int ratio = 100);
     }
 }

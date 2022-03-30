@@ -2,15 +2,10 @@
 
 namespace HelloPlugin
 {
-    public class HelloPluginCommand : PluginCommand
-    {
-        public string Response = "";
-    }
-
     public class HelloPluginSettings
     {
         //[JsonProperty(Required = Required.Always)]
-        public HelloPluginCommand[] Commands { get; set; } =
+        public HelloPluginCommand[] Commands =
         {
             new HelloPluginCommand
             {

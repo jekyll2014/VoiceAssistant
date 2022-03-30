@@ -7,7 +7,7 @@ namespace PluginInterface
 {
     class TextToNumberEng : ITextToNumber
     {
-        private readonly Dictionary<string, int> numberTable = new Dictionary<string, int>
+        private readonly Dictionary<string, long> numberTable = new Dictionary<string, long>
         {
             {"zero",0},
             {"one",1},
@@ -42,19 +42,19 @@ namespace PluginInterface
             {"lakh",100000},
             {"million",1000000},
             {"billion",1000000000},
-            /*{"trillion",1000000000000},
+            {"trillion",1000000000000},
             {"quadrillion",1000000000000000},
-            {"quintillion",1000000000000000000}*/
+            {"quintillion",1000000000000000000}
         };
 
-        public int ConvertStringToNumber(string numberString, int ratio = 100)
+        public long ConvertStringToNumber(string numberString, int ratio = 100)
         {
             var numbers = Regex.Matches(numberString, @"\w+").Cast<Match>()
                     .Select(m => m.Value.ToLowerInvariant())
                     .Where(v => numberTable.ContainsKey(v))
                     .Select(v => numberTable[v]);
 
-            int acc = 0, total = 0;
+            long acc = 0, total = 0;
 
             foreach (var n in numbers)
             {

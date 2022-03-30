@@ -2,14 +2,6 @@
 
 namespace BrowserPlugin
 {
-    public class BrowserPluginCommand : PluginCommand
-    {
-        public string Response = "";
-        public string URL = "";
-        public bool isStopCommand = false;
-        public bool useStandAloneBrowser = false;
-    }
-
     public class BrowserPluginSettings
     {
         //[JsonProperty(Required = Required.Always)]
@@ -18,7 +10,7 @@ namespace BrowserPlugin
         public string CanNotRun = "не удалось запустить";
         public string AlreadyRunning = "уже запущен";
 
-        public BrowserPluginCommand[] Commands { get; set; } =
+        public BrowserPluginCommand[] Commands =
         {
             new BrowserPluginCommand
             {

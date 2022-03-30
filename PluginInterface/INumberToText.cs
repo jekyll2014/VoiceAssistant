@@ -2,6 +2,6 @@
 {
     public interface INumberToText
     {
-        public abstract string ConvertNumberToString(int val);
+        public abstract string ConvertNumberToString(long val);
     }
 }

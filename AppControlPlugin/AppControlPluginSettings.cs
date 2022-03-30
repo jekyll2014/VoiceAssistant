@@ -1,23 +1,14 @@
-﻿using System.Collections.Generic;
-
-using PluginInterface;
+﻿using PluginInterface;
 
 namespace AppControlPlugin
 {
-    public class AppControlPluginCommand : PluginCommand
-    {
-        public string Response = "";
-        public string ApplicationId = "";
-        public string[] KeyNames = { "" };
-    }
-
     public class AppControlPluginSettings
     {
         public string KeyNotFound = "Кнопка не найдена";
         public string ProcessNotFound = "Процесс не найден";
 
         //[JsonProperty(Required = Required.Always)]
-        public AppControlPluginCommand[] Commands { get; set; } =
+        public AppControlPluginCommand[] Commands =
         {
             new AppControlPluginCommand
             {

@@ -54,13 +54,13 @@ namespace TimerPlugin
 
             if (minToken != null)
             {
-                minCount = stringToNumberConvertor.ConvertStringToNumber(minToken.Value[0], minToken.SuccessRate);
+                minCount = (int)stringToNumberConvertor.ConvertStringToNumber(minToken.Value[0], minToken.SuccessRate);
             }
 
             var secCount = 0;
             if (secToken != null)
             {
-                secCount = stringToNumberConvertor.ConvertStringToNumber(secToken.Value[0], secToken.SuccessRate);
+                secCount = (int)stringToNumberConvertor.ConvertStringToNumber(secToken.Value[0], secToken.SuccessRate);
             }
 
             var response = string.Empty;
@@ -85,7 +85,7 @@ namespace TimerPlugin
                         _timers.Remove(timer);
                         response = command.Response;
                         // string.Empty is used to avoid using {0} int templates
-                        response = string.Format(command.Response, string.Empty, 
+                        response = string.Format(command.Response, string.Empty,
                             NumberToStringConvertor.ConvertNumberToString(minCount),
                             NumberToStringConvertor.ConvertNumberToString(secCount));
                     }
@@ -118,7 +118,7 @@ namespace TimerPlugin
                     t.Start();
 
                     // string.Empty is used to avoid using {0} int templates
-                    response = string.Format(command.Response, string.Empty, 
+                    response = string.Format(command.Response, string.Empty,
                         NumberToStringConvertor.ConvertNumberToString(minCount),
                         NumberToStringConvertor.ConvertNumberToString(secCount));
                 }
