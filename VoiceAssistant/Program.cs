@@ -18,16 +18,15 @@ Plugins list planned:
 2. Timer (done)
 3. Open web-site in browser (done)
 4. Run program (done)
-5. Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp) (done)
-6. Application control using key code injection (suitable for MPC-HC, VLC, Foobar2000, etc)
+5. Currency rates (done)
+6. Application control using key code injection (done)
+7. Weather check openweathermap.org (done)
 
-7. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
-8. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
-
-9. Weather check (yandex)
-10. Suburban trains (yandex)
-11. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
-12. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
+8. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
+9. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
+10. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
+11. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
+12. Suburban trains (yandex)
 */
 
 using FuzzySharp;

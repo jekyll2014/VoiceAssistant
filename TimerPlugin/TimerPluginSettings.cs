@@ -4,6 +4,10 @@ namespace TimerPlugin
 {
     public class TimerPluginSettings
     {
+        public string[] ConfigurationNote = {"Available parameters:",
+            "%minutes% - minutes",
+            "%seconds% - seconds" };
+
         //[JsonProperty(Required = Required.Always)]
         public string AlarmSound = "timer.wav";
         public string IncorrectTime = "Некорректное время";

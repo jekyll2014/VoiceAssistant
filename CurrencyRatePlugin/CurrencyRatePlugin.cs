@@ -133,7 +133,5 @@ namespace CurrencyRatePlugin
         public string CurrencyName;
         public string Nominal;
         public string Value;
-
-
     }
 }
