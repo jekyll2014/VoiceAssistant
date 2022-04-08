@@ -102,7 +102,15 @@ namespace VoiceAssistant
             // start listening
             waveIn.DataAvailable += ProcessAudioInput;
             waveIn.RecordingStopped += (s, a) => { waveIn.Dispose(); };
-            waveIn.StartRecording();
+
+            try
+            {
+                waveIn.StartRecording();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Can't open audio input: {ex.Message}");
+            }
 
             audioOut.PlayFile(_appConfig.StartSound);
             Console.WriteLine("\r\nAssistant started");
@@ -115,7 +123,6 @@ namespace VoiceAssistant
             }
 
             waveIn.StopRecording();
-            waveIn.Dispose();
 
             waveOut.Stop();
             waveOut.Dispose();
@@ -315,7 +322,7 @@ namespace VoiceAssistant
                 {
                     var recordingPlugins = _plugins.Where(n => n.AcceptsSound);
 
-                    if (recordingPlugins != null && recordingPlugins.Any())
+                    if (recordingPlugins.Any())
                     {
                         var len = waveEventArgs.BytesRecorded;
                         byte[] dataCopy = new byte[len];
@@ -557,11 +564,15 @@ namespace VoiceAssistant
                 if (command.ExpectedCommand.Tokens.Length <= curentPosition)
                 {
                     // if last token in the expected phrase is parameter
-                    if (command.ExpectedCommand.Tokens.LastOrDefault().Type == TokenType.Parameter)
+                    if (command.ExpectedCommand.Tokens.LastOrDefault()?.Type == TokenType.Parameter)
                     {
                         var lastParam = command.CommandTokens.LastOrDefault();
+
                         // add new word to the parameter
-                        lastParam.Value[0] += " " + newTokenString;
+                        if (lastParam != null)
+                        {
+                            lastParam.Value[0] += " " + newTokenString;
+                        }
                     }
                     // if last token in the expected phrase is command
                     else
@@ -608,7 +619,11 @@ namespace VoiceAssistant
                     else if (command.CommandTokens.LastOrDefault()?.Type == TokenType.Parameter)
                     {
                         var lastParam = command.CommandTokens.LastOrDefault();
-                        lastParam.Value[0] += " " + newTokenString;
+
+                        if (lastParam != null)
+                        {
+                            lastParam.Value[0] += " " + newTokenString;
+                        }
                     }
                     // or it's the wrng command. Remove it from a pool
                     else
