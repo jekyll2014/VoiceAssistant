@@ -352,7 +352,7 @@ namespace OpenWeatherPlugin
             var result = new StringBuilder();
             var openBracketPosition = sample.IndexOf('{');
 
-            if (openBracketPosition <= 0)
+            if (openBracketPosition < 0)
             {
                 return sample;
             }
