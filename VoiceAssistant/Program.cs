@@ -20,9 +20,9 @@ Plugins list planned:
 4. Run program (done)
 5. Currency rates (done)
 6. Application control using key code injection (done)
-7. Weather check openweathermap.org (done)
+7. Openweathermap.org weather check for (done)
+8. Google/Yandex calendar tasks check/add (done)
 
-8. Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet , https://stackoverflow.com/questions/55103032/how-to-create-an-event-in-google-calendar-using-c-sharp-and-google-api )
 9. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
 10. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
 11. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
@@ -131,7 +131,7 @@ namespace VoiceAssistant
                     var simulatedInput = new VoskResult
                     {
                         result = simResult,
-                        text = command.Substring(2)
+                        text = command[2..]
                     };
 
                     ProcessAudioInput(simulatedInput, null);

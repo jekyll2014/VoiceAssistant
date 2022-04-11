@@ -80,7 +80,7 @@ namespace OpenWeatherPlugin
                 var currentWeather = GetCurrentWeather(ApiKey, command.CityId);
                 var windDir = GetWindDirectionName(currentWeather.WindDirection);
                 //message = string.Format(command.Response, "", "", "", "", "", currentWeather.WeatherDescription, currentWeather.Temperature, currentWeather.Humidity, currentWeather.WindSpeed, windDir);
-                message = FormatStringWithClassFields(command.Response, currentWeather);
+                message = PluginTools.FormatStringWithClassFields(command.Response, currentWeather);
             }
             else
             {
@@ -89,20 +89,20 @@ namespace OpenWeatherPlugin
 
                 if (command.DayTime == "Today" && weatherForecast.Count() >= 4)
                 {
-                    dtMessages.MorningPhrase = weatherForecast[0] == null ? "" : FormatStringWithClassFields(_morningPhrase, weatherForecast[0]);
-                    dtMessages.DayPhrase = weatherForecast[1] == null ? "" : FormatStringWithClassFields(_dayPhrase, weatherForecast[1]);
-                    dtMessages.EveningPhrase = weatherForecast[2] == null ? "" : FormatStringWithClassFields(_eveningPhrase, weatherForecast[2]);
-                    dtMessages.NightPhrase = weatherForecast[3] == null ? "" : FormatStringWithClassFields(_nightPhrase, weatherForecast[3]);
+                    dtMessages.MorningPhrase = weatherForecast[0] == null ? "" : PluginTools.FormatStringWithClassFields(_morningPhrase, weatherForecast[0]);
+                    dtMessages.DayPhrase = weatherForecast[1] == null ? "" : PluginTools.FormatStringWithClassFields(_dayPhrase, weatherForecast[1]);
+                    dtMessages.EveningPhrase = weatherForecast[2] == null ? "" : PluginTools.FormatStringWithClassFields(_eveningPhrase, weatherForecast[2]);
+                    dtMessages.NightPhrase = weatherForecast[3] == null ? "" : PluginTools.FormatStringWithClassFields(_nightPhrase, weatherForecast[3]);
                 }
                 else if (command.DayTime == "Tomorrow" && weatherForecast.Count() >= 8)
                 {
-                    dtMessages.MorningPhrase = weatherForecast[4] == null ? "" : FormatStringWithClassFields(_morningPhrase, weatherForecast[4]);
-                    dtMessages.DayPhrase = weatherForecast[5] == null ? "" : FormatStringWithClassFields(_dayPhrase, weatherForecast[5]);
-                    dtMessages.EveningPhrase = weatherForecast[6] == null ? "" : FormatStringWithClassFields(_eveningPhrase, weatherForecast[6]);
-                    dtMessages.NightPhrase = weatherForecast[7] == null ? "" : FormatStringWithClassFields(_nightPhrase, weatherForecast[7]);
+                    dtMessages.MorningPhrase = weatherForecast[4] == null ? "" : PluginTools.FormatStringWithClassFields(_morningPhrase, weatherForecast[4]);
+                    dtMessages.DayPhrase = weatherForecast[5] == null ? "" : PluginTools.FormatStringWithClassFields(_dayPhrase, weatherForecast[5]);
+                    dtMessages.EveningPhrase = weatherForecast[6] == null ? "" : PluginTools.FormatStringWithClassFields(_eveningPhrase, weatherForecast[6]);
+                    dtMessages.NightPhrase = weatherForecast[7] == null ? "" : PluginTools.FormatStringWithClassFields(_nightPhrase, weatherForecast[7]);
                 }
 
-                message = FormatStringWithClassFields(command.Response, dtMessages);
+                message = PluginTools.FormatStringWithClassFields(command.Response, dtMessages);
             }
 
             AudioOut.Speak(message);
@@ -345,72 +345,6 @@ namespace OpenWeatherPlugin
             newValues = (T)serializer.Deserialize(jsonStream, typeof(T));
 
             return newValues;
-        }
-
-        private string FormatStringWithClassFields(string sample, object sourceClass)
-        {
-            var result = new StringBuilder();
-            var openBracketPosition = sample.IndexOf('{');
-
-            if (openBracketPosition < 0)
-            {
-                return sample;
-            }
-
-            if (openBracketPosition > 0)
-            {
-                result.Append(sample.Substring(0, openBracketPosition));
-            }
-
-            while (openBracketPosition >= 0)
-            {
-                var closeBracketPosition = sample.IndexOf('}', openBracketPosition + 1);
-                if (closeBracketPosition < 0)
-                {
-                    result.Append(sample.Substring(openBracketPosition));
-
-                    return result.ToString();
-                }
-
-                var propertyName = sample.Substring(openBracketPosition + 1, closeBracketPosition - openBracketPosition - 1);
-
-                object propertyValue = null;
-                try
-                {
-                    propertyValue = sourceClass.GetType()?.GetField(propertyName)?.GetValue(sourceClass);
-
-                    if (propertyValue == null)
-                    {
-                        propertyValue = sourceClass.GetType()?.GetProperty(propertyName)?.GetValue(sourceClass);
-                    }
-                }
-                catch
-                {
-
-                }
-
-                if (propertyValue != null)
-                {
-                    result.Append(propertyValue.ToString());
-                }
-                else
-                {
-                    result.Append("{" + propertyName + "}");
-                }
-
-                openBracketPosition = sample.IndexOf('{', closeBracketPosition + 1);
-
-                if (openBracketPosition > 0)
-                {
-                    result.Append(sample.Substring(closeBracketPosition + 1, openBracketPosition - closeBracketPosition - 1));
-                }
-                else
-                {
-                    result.Append(sample.Substring(closeBracketPosition + 1));
-                }
-            }
-
-            return result.ToString();
         }
     }
 }
