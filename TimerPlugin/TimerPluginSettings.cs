@@ -4,9 +4,15 @@ namespace TimerPlugin
 {
     public class TimerPluginSettings
     {
-        public string[] ConfigurationNote = {"Available parameters:",
+        public string[] ConfigurationNote = 
+        {
+            "Available parameters:",
             "%minutes% - minutes",
-            "%seconds% - seconds" };
+            "%seconds% - seconds",
+            "Interpolation macros:",
+            "{1} - number of minutes",
+            "{2} - number of seconds"
+        };
 
         //[JsonProperty(Required = Required.Always)]
         public string AlarmSound = "timer.wav";
