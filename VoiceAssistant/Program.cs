@@ -120,6 +120,22 @@ namespace VoiceAssistant
             while (!command.Equals("exit", StringComparison.OrdinalIgnoreCase))
             {
                 command = Console.ReadLine();
+                if (command.StartsWith("//"))
+                {
+                    var simResult = new List<Result>();
+                    foreach (var c in command.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        simResult.Add(new Result { word = c });
+                    }
+
+                    var simulatedInput = new VoskResult
+                    {
+                        result = simResult,
+                        text = command.Substring(2)
+                    };
+
+                    ProcessAudioInput(simulatedInput, null);
+                }
             }
 
             waveIn.StopRecording();
@@ -315,33 +331,43 @@ namespace VoiceAssistant
         {
             lock (SyncRoot)
             {
-                var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
-
-                // copy audio data to plugin's buffer if allowed anf if any plugin wants
-                if (_appConfig.AllowPluginsToListenToSound)
+                VoskResult newWords;
+                // simulated words from external source
+                if (s is VoskResult simulatedInput)
                 {
-                    var recordingPlugins = _plugins.Where(n => n.AcceptsSound);
+                    newWords = simulatedInput;
+                }
+                // naturally spoken words
+                else
+                {
+                    var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
 
-                    if (recordingPlugins.Any())
+                    // copy audio data to plugin's buffer if allowed anf if any plugin wants
+                    if (_appConfig.AllowPluginsToListenToSound)
                     {
-                        var len = waveEventArgs.BytesRecorded;
-                        byte[] dataCopy = new byte[len];
-                        Array.Copy(waveEventArgs.Buffer, dataCopy, len);
+                        var recordingPlugins = _plugins.Where(n => n.AcceptsSound);
 
-                        foreach (var plugin in recordingPlugins)
+                        if (recordingPlugins.Any())
                         {
-                            plugin.AddSound(dataCopy);
+                            var len = waveEventArgs.BytesRecorded;
+                            byte[] dataCopy = new byte[len];
+                            Array.Copy(waveEventArgs.Buffer, dataCopy, len);
+
+                            foreach (var plugin in recordingPlugins)
+                            {
+                                plugin.AddSound(dataCopy);
+                            }
                         }
                     }
-                }
 
-                if (!recognitionResult)
-                {
-                    return;
-                }
+                    if (!recognitionResult)
+                    {
+                        return;
+                    }
 
-                var jsonResult = voiceRecognition.Result();
-                var newWords = JsonConvert.DeserializeObject<VoskResult>(jsonResult);
+                    var jsonResult = voiceRecognition.Result();
+                    newWords = JsonConvert.DeserializeObject<VoskResult>(jsonResult);
+                }
 
                 if (newWords == null || string.IsNullOrEmpty(newWords.text))
                 {
