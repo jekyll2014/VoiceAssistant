@@ -23,21 +23,22 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
 - allow command injection from plugin (enable by config parameter)
 - refactor settings names
 
-### Plugins list:
+### Available plugins:
 - Hello
 - Timer
-- Open web-site in browser
+- Open web-site standalone/in browser
 - Run program
 - Currency rates (https://www.cbr-xml-daily.ru/daily_json.js , http://www.cbr.ru/scripts/XML_daily.asp)
+- Weather check (https://openweathermap.org/api)
+- Google calendar tasks check (https://developers.google.com/calendar/api/quickstart/dotnet)
 - Application control using key code injection (suitable for MPC-HC, VLC, Foobar2000, etc)
 
-### Plugins list planned:
-- Google/Yandex calendar tasks check/add (https://developers.google.com/calendar/api/quickstart/dotnet)
+### Planned plugins:
 - Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
-- Weather check (https://openweathermap.org/api)
-- Suburban trains (yandex?)
 - Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
 - Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
+- MQTT adapter
+- Telegram audio message receiver
 
 ## Core module settings are in the appsettings.json file:
 -  "ModelFolder": "model" - folder with VOSK voice model. Get ti from official site https://alphacephei.com/vosk/models
