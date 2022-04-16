@@ -19,9 +19,19 @@ namespace VoiceAssistant
 
             foreach (var filePath in Directory.EnumerateFiles(pluginPath, filter, SearchOption.AllDirectories))
             {
-                var plugin = Load(filePath, constructorArgs);
+                try
+                {
+                    var plugin = Load(filePath, constructorArgs);
 
-                if (plugin != null) plugins.Add(plugin);
+                    if (plugin != null)
+                    {
+                        plugins.Add(plugin);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error loading plugin {filePath}: {ex.Message}");
+                }
             }
 
             return plugins;
@@ -42,7 +52,7 @@ namespace VoiceAssistant
             newArgs.AddRange(constructorArgs);
             newArgs.Add(pluginPath);
 
-            return (T) Activator.CreateInstance(type, newArgs.ToArray());
+            return (T)Activator.CreateInstance(type, newArgs.ToArray());
         }
 
         public void UnloadAll()
@@ -78,18 +88,18 @@ namespace VoiceAssistant
         {
             //Do not load the Plugin Interface DLL into the adapter's context
             //otherwise IsAssignableFrom is false. 
-            if (_assembliesToNotLoadIntoContext.Contains(assemblyName.FullName)) 
+            if (_assembliesToNotLoadIntoContext.Contains(assemblyName.FullName))
                 return null;
 
             var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            
+
             return assemblyPath != null ? LoadFromAssemblyPath(assemblyPath) : null;
         }
 
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
         {
             var libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            
+
             return libraryPath != null ? LoadUnmanagedDllFromPath(libraryPath) : IntPtr.Zero;
         }
     }
