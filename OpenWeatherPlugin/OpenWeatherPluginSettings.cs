@@ -52,6 +52,7 @@ namespace OpenWeatherPlugin
 
         public string ApiKey = "";
 
+        public string NoDataPhrase = "Не могу получить данные с сервера";
         public List<(string Name, int MaxDegree)> WindDirections = new List<(string, int)>
         {
             ("Северный", 23),

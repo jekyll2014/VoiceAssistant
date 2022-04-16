@@ -14,6 +14,7 @@ namespace OpenWeatherPlugin
     public partial class OpenWeatherPlugin : PluginBase
     {
         private readonly string ApiKey = "";
+        private readonly string NoDataPhrase = "";
 
         private readonly OpenWeatherPluginCommand[] CurrencyRateCommands;
         public List<(string Name, int MaxDegree)> WindDirections;
@@ -45,6 +46,12 @@ namespace OpenWeatherPlugin
 
             CurrencyRateCommands = configBuilder.ConfigStorage.Commands;
 
+            ApiKey = configBuilder.ConfigStorage.ApiKey;
+            if (string.IsNullOrEmpty(ApiKey))
+            {
+                throw new ArgumentNullException(nameof(ApiKey));
+            }
+
             if (CurrencyRateCommands is PluginCommand[] newCmds)
             {
                 _commands = newCmds;
@@ -61,7 +68,7 @@ namespace OpenWeatherPlugin
             EveningStartHour = configBuilder.ConfigStorage.EveningStartHour;
             NightStartHour = configBuilder.ConfigStorage.NightStartHour;
             WindDirections = configBuilder.ConfigStorage.WindDirections;
-            ApiKey = configBuilder.ConfigStorage.ApiKey;
+            NoDataPhrase = configBuilder.ConfigStorage.NoDataPhrase;
         }
 
         public override void Execute(string commandName, List<Token> commandTokens)
@@ -78,31 +85,44 @@ namespace OpenWeatherPlugin
             if (command.DayTime == "Now")
             {
                 var currentWeather = GetCurrentWeather(ApiKey, command.CityId);
-                var windDir = GetWindDirectionName(currentWeather.WindDirection);
-                //message = string.Format(command.Response, "", "", "", "", "", currentWeather.WeatherDescription, currentWeather.Temperature, currentWeather.Humidity, currentWeather.WindSpeed, windDir);
-                message = PluginTools.FormatStringWithClassFields(command.Response, currentWeather);
+                if (currentWeather == null)
+                {
+                    message = NoDataPhrase;
+                }
+                else
+                {
+                    var windDir = GetWindDirectionName(currentWeather.WindDirection);
+                    message = PluginTools.FormatStringWithClassFields(command.Response, currentWeather);
+                }
             }
             else
             {
                 var weatherForecast = GetWeatherForecast(ApiKey, command.CityId);
                 var dtMessages = new DayTimeMessages();
 
-                if (command.DayTime == "Today" && weatherForecast.Count() >= 4)
+                if (weatherForecast == null || weatherForecast.Count() < 4)
                 {
-                    dtMessages.MorningPhrase = weatherForecast[0] == null ? "" : PluginTools.FormatStringWithClassFields(_morningPhrase, weatherForecast[0]);
-                    dtMessages.DayPhrase = weatherForecast[1] == null ? "" : PluginTools.FormatStringWithClassFields(_dayPhrase, weatherForecast[1]);
-                    dtMessages.EveningPhrase = weatherForecast[2] == null ? "" : PluginTools.FormatStringWithClassFields(_eveningPhrase, weatherForecast[2]);
-                    dtMessages.NightPhrase = weatherForecast[3] == null ? "" : PluginTools.FormatStringWithClassFields(_nightPhrase, weatherForecast[3]);
+                    message = NoDataPhrase;
                 }
-                else if (command.DayTime == "Tomorrow" && weatherForecast.Count() >= 8)
+                else
                 {
-                    dtMessages.MorningPhrase = weatherForecast[4] == null ? "" : PluginTools.FormatStringWithClassFields(_morningPhrase, weatherForecast[4]);
-                    dtMessages.DayPhrase = weatherForecast[5] == null ? "" : PluginTools.FormatStringWithClassFields(_dayPhrase, weatherForecast[5]);
-                    dtMessages.EveningPhrase = weatherForecast[6] == null ? "" : PluginTools.FormatStringWithClassFields(_eveningPhrase, weatherForecast[6]);
-                    dtMessages.NightPhrase = weatherForecast[7] == null ? "" : PluginTools.FormatStringWithClassFields(_nightPhrase, weatherForecast[7]);
-                }
+                    if (command.DayTime == "Today" && weatherForecast.Count() >= 4)
+                    {
+                        dtMessages.MorningPhrase = weatherForecast[0] == null ? "" : PluginTools.FormatStringWithClassFields(_morningPhrase, weatherForecast[0]);
+                        dtMessages.DayPhrase = weatherForecast[1] == null ? "" : PluginTools.FormatStringWithClassFields(_dayPhrase, weatherForecast[1]);
+                        dtMessages.EveningPhrase = weatherForecast[2] == null ? "" : PluginTools.FormatStringWithClassFields(_eveningPhrase, weatherForecast[2]);
+                        dtMessages.NightPhrase = weatherForecast[3] == null ? "" : PluginTools.FormatStringWithClassFields(_nightPhrase, weatherForecast[3]);
+                    }
+                    else if (command.DayTime == "Tomorrow" && weatherForecast.Count() >= 8)
+                    {
+                        dtMessages.MorningPhrase = weatherForecast[4] == null ? "" : PluginTools.FormatStringWithClassFields(_morningPhrase, weatherForecast[4]);
+                        dtMessages.DayPhrase = weatherForecast[5] == null ? "" : PluginTools.FormatStringWithClassFields(_dayPhrase, weatherForecast[5]);
+                        dtMessages.EveningPhrase = weatherForecast[6] == null ? "" : PluginTools.FormatStringWithClassFields(_eveningPhrase, weatherForecast[6]);
+                        dtMessages.NightPhrase = weatherForecast[7] == null ? "" : PluginTools.FormatStringWithClassFields(_nightPhrase, weatherForecast[7]);
+                    }
 
-                message = PluginTools.FormatStringWithClassFields(command.Response, dtMessages);
+                    message = PluginTools.FormatStringWithClassFields(command.Response, dtMessages);
+                }
             }
 
             AudioOut.Speak(message);
@@ -134,19 +154,18 @@ namespace OpenWeatherPlugin
             }
 
             // получить json
-            var result = new CurrentWeatherData();
             var jsonText = GetWeatherData(serviceUrl);
 
             if (string.IsNullOrEmpty(jsonText))
             {
-                return result;
+                return null;
             }
 
             // распарсить
             var data = ParseJson<WeatherCurrent>(jsonText);
 
             // переложить из пришедших данных в свою структуру
-            result = GetSimpleData(data);
+            var result = GetSimpleData(data);
 
             // добавить в кэш
             _currentWeatherCache.Add(serviceUrl, result);
@@ -200,18 +219,18 @@ namespace OpenWeatherPlugin
             }
 
             // получить json
-            var result = new WeatherForecastData[] { };
             var jsonText = GetWeatherData(serviceUrl);
 
             if (string.IsNullOrEmpty(jsonText))
             {
-                return result;
+                return null;
             }
 
             // распарсить
             var data = ParseJson<WeatherForecast>(jsonText);
 
             // переложить из пришедших данных в свою структуру
+            var result = new WeatherForecastData[] { };
             if (data != null)
             {
                 var timeNow = DateTimeToUnixTimestamp(DateTime.UtcNow);
