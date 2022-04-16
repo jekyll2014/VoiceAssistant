@@ -185,5 +185,6 @@ namespace GoogleCalendarPlugin
 
         public string MoreResultsAvailableMessage = "и дальнейшие события, не вошедшие в список";
         public string NoEventsMessage = "пусто";
+        public string NoDataMessage = "не могу получить данные с сервера";
     }
 }

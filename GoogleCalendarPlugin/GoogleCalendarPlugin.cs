@@ -33,6 +33,7 @@ namespace GoogleCalendarPlugin
 
         private readonly string moreResultsAvailableMessage = "";
         private readonly string noEventsMessage = "";
+        private readonly string NoDataMessage = "";
 
         public GoogleCalendarPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
@@ -50,6 +51,7 @@ namespace GoogleCalendarPlugin
             }
             moreResultsAvailableMessage = configBuilder.ConfigStorage.MoreResultsAvailableMessage;
             noEventsMessage = configBuilder.ConfigStorage.NoEventsMessage;
+            NoDataMessage = configBuilder.ConfigStorage.NoDataMessage;
         }
 
         public override void Execute(string commandName, List<Token> commandTokens)
@@ -61,6 +63,13 @@ namespace GoogleCalendarPlugin
             }
 
             var events = GetEvents(GoogleApiCredentials, command.CalendarId, command.DaysStart, command.DaysCount, command.MaxEvents, out var moreEvents);
+
+            if (events == null)
+            {
+                AudioOut.Speak(NoDataMessage);
+                return;
+            }
+
             var eventsMessage = "";
             foreach (var eventItem in events)
             {
