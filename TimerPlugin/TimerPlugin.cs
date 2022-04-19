@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -83,7 +85,6 @@ namespace TimerPlugin
                     {
                         timer.Item2.Stop();
                         _timers.Remove(timer);
-                        response = command.Response;
                         // string.Empty is used to avoid using {0} int templates
                         response = string.Format(command.Response, string.Empty,
                             NumberToStringConvertor.ConvertNumberToString(minCount),

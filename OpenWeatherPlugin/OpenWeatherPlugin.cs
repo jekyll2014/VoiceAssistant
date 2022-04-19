@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using Newtonsoft.Json;
 
 using PluginInterface;
 
@@ -184,7 +186,7 @@ namespace OpenWeatherPlugin
                 result.Pressure = data.main?.pressure ?? -1;
                 result.RecordDateTime = UnixTimeStampToDateTime(data.dt);
                 result.Temperature = (int)data.main?.temp;
-                result.WeatherDescription = data.weather?.FirstOrDefault().description;
+                result.WeatherDescription = data.weather?.FirstOrDefault()?.description ?? "";
                 result.WindDirection = data.wind?.deg ?? -1;
                 result.WindDirectionName = result.WindDirection == -1 ? "" : GetWindDirectionName(result.WindDirection);
                 result.WindSpeed = (int)data.wind?.speed;
@@ -271,14 +273,13 @@ namespace OpenWeatherPlugin
             // добавить в кэш
             _weatherForecastData.Add(serviceUrl, result);
 
-
             return result;
         }
 
         public static long DateTimeToUnixTimestamp(DateTime dateTime)
         {
             return (long)((TimeZoneInfo.ConvertTimeToUtc(dateTime) -
-                   new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)).TotalSeconds);
+                   new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds);
         }
 
         private WeatherForecastData GetAverageData(WeatherForecast.List[] data)
@@ -288,7 +289,7 @@ namespace OpenWeatherPlugin
 
             WeatherForecastData result = new WeatherForecastData();
 
-            result.RecordDateTime = UnixTimeStampToDateTime(data.FirstOrDefault().dt);
+            result.RecordDateTime = UnixTimeStampToDateTime(data.FirstOrDefault()?.dt ?? default);
 
             result.Clouds = (int)(data.Average(n => n.clouds?.all ?? -1));
             result.MinClouds = data.Min(n => n.clouds?.all ?? -1);
@@ -334,8 +335,9 @@ namespace OpenWeatherPlugin
                     json = httpClient.GetStringAsync(serviceUrl).Result;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error getting OpenWeather data: {ex.Message}");
             }
 
             return json;

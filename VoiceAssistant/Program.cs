@@ -1,4 +1,6 @@
-﻿/*
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+/*
 Used resources:
 - VOSK voice recognition module: https://alphacephei.com/vosk/
   language models: https://alphacephei.com/vosk/models
@@ -8,7 +10,7 @@ Used resources:
 
 ToDo:
 - move core messages into resources
-- command validation all over plugins to avoid similar commands
+- command validation all over plugins to avoid duplicate commands
 - allow command injection from plugin (enable by config parameter)
 - console commands like "help", "commands", "log on/off"
 - core logging and corresponding settings parameter
@@ -21,12 +23,12 @@ Plugins list planned:
 5. Currency rates (done)
 6. Application control using key code injection (done)
 7. Openweathermap.org weather check for (done)
-8. Google/Yandex calendar tasks check/add (done)
+8. Google calendar tasks check/add (done)
 
-9. Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
-10. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
-11. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
-12. Suburban trains (yandex)
+9. simple MQTT adaptor
+10. Search/Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
+11. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
+12. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
 */
 
 using FuzzySharp;
@@ -338,7 +340,7 @@ namespace VoiceAssistant
                     newWords = simulatedInput;
                 }
                 // naturally spoken words
-                else
+                else if (waveEventArgs != null)
                 {
                     var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
 
@@ -367,6 +369,10 @@ namespace VoiceAssistant
 
                     var jsonResult = voiceRecognition.Result();
                     newWords = JsonConvert.DeserializeObject<VoskResult>(jsonResult);
+                }
+                else
+                {
+                    return;
                 }
 
                 if (newWords == null || string.IsNullOrEmpty(newWords.text))

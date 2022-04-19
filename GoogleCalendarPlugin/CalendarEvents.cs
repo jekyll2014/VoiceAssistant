@@ -1,4 +1,6 @@
-﻿using Google.Apis.Calendar.v3.Data;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using Google.Apis.Calendar.v3.Data;
 
 using System;
 
@@ -22,7 +24,7 @@ namespace GoogleCalendarPlugin
             {
                 get
                 {
-                    return ((DateTime)Start).ToString("dd MMMM") ?? string.Empty;
+                    return ((DateTime)Start).ToString("dd MMMM");
                 }
             }
 
@@ -46,7 +48,7 @@ namespace GoogleCalendarPlugin
             {
                 get
                 {
-                    return ((DateTime)End).ToString("dd MMMM") ?? string.Empty;
+                    return ((DateTime)End).ToString("dd MMMM");
                 }
             }
 
@@ -93,7 +95,7 @@ namespace GoogleCalendarPlugin
                         if (Start != null && End != null)
                         {
                             var diff = ((DateTime)End).Subtract((DateTime)Start);
-                            _lengthMinute = diff.Hours;
+                            _lengthMinute = diff.Minutes;
                         }
                         else
                         {

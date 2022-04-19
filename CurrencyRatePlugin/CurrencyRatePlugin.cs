@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,7 +59,12 @@ namespace CurrencyRatePlugin
         private async Task<(int, float)> GetCurrencyRate(string currencyServiceUrl, string curencyCode, int decimalRound)
         {
             var currencyRates = await GetRate(currencyServiceUrl);
+            if (currencyRates == null)
+                return (-1, -1);
+
             var currencyRate = currencyRates.FirstOrDefault(n => n.CurrencyCode == curencyCode);
+            if (currencyRate == null)
+                return (-1, -1);
 
             if (!int.TryParse(currencyRate.Nominal, out var nominal))
                 return (-1, -1);

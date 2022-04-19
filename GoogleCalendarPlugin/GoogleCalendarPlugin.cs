@@ -1,4 +1,6 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
@@ -95,71 +97,80 @@ namespace GoogleCalendarPlugin
             moreEvents = false;
             UserCredential credential;
 
-            using (var stream =
+            try
+            {
                 //new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-                new MemoryStream(Encoding.UTF8.GetBytes(apiCredentials)))
-            {
-                // The file token.json stores the user's access and refresh tokens, and is created
-                // automatically when the authorization flow completes for the first time.
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.FromStream(stream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore($"{PluginPath}\\{credPath}", true)).Result;
-            }
-
-            // Create Google Calendar API service.
-            var service = new CalendarService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
-
-            if (string.IsNullOrEmpty(calendarName))
-            {
-                var calendarsRequest = service.CalendarList.List();
-                var calendars = calendarsRequest.Execute();
-
-                if (calendars != null)
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(apiCredentials)))
                 {
-                    Console.WriteLine("Available calendars:");
+                    // The file token.json stores the user's access and refresh tokens, and is created
+                    // automatically when the authorization flow completes for the first time.
+                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                        GoogleClientSecrets.FromStream(stream).Secrets,
+                        Scopes,
+                        "user",
+                        CancellationToken.None,
+                        new FileDataStore($"{PluginPath}\\{credPath}", true)).Result;
+                }
 
-                    foreach (var calendar in calendars.Items)
+                // Create Google Calendar API service.
+                using var service = new CalendarService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = ApplicationName,
+                });
+
+                if (string.IsNullOrEmpty(calendarName))
+                {
+                    var calendarsRequest = service.CalendarList.List();
+                    var calendars = calendarsRequest.Execute();
+
+                    if (calendars != null)
                     {
-                        Console.WriteLine($"ID: {calendar.Id}\r\nDescription: {calendar.Description}\r\nSummary: {calendar.Summary}\r\n");
+                        Console.WriteLine("Available calendars:");
+
+                        foreach (var calendar in calendars.Items)
+                        {
+                            Console.WriteLine($"ID: {calendar.Id}\r\nDescription: {calendar.Description}\r\nSummary: {calendar.Summary}\r\n");
+                        }
+                    }
+
+                    // set calendar name to default
+                    calendarName = "primary";
+                }
+
+                // Define parameters of request
+                EventsResource.ListRequest request = service.Events.List(calendarName); // "****@gmail.com", "primary", "addressbook#contacts@group.v.calendar.google.com"
+                request.ShowDeleted = false;
+                request.SingleEvents = true;
+                request.MaxResults = maxEvents;
+                request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+                request.TimeMax = DateTime.Today.AddDays(daysCount);
+                if (daysStart == 0)
+                    request.TimeMin = DateTime.Today.AddDays(daysStart);
+                else
+                    request.TimeMin = DateTime.Now;
+
+                // List events
+                Events events = request.Execute();
+                var result = new List<CalendarEvents>();
+                if (events.Items != null)
+                {
+                    foreach (var eventItem in events.Items)
+                    {
+                        result.Add(new CalendarEvents(eventItem));
                     }
                 }
 
-                calendarName = "primary";
+                // do we have more events pages? No use to list too many events at once
+                moreEvents = !string.IsNullOrEmpty(events.NextPageToken);
+
+                return result.ToArray();
             }
-
-            // Define parameters of request
-            EventsResource.ListRequest request = service.Events.List(calendarName); // "****@gmail.com", "primary", "addressbook#contacts@group.v.calendar.google.com"
-            request.ShowDeleted = false;
-            request.SingleEvents = true;
-            request.MaxResults = maxEvents;
-            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
-            request.TimeMax = DateTime.Today.AddDays(daysCount);
-            if (daysStart == 0)
-                request.TimeMin = DateTime.Today.AddDays(daysStart);
-            else
-                request.TimeMin = DateTime.Now;
-
-            // List events
-            Events events = request.Execute();
-            var result = new List<CalendarEvents>();
-            if (events.Items != null)
+            catch (Exception ex)
             {
-                foreach (var eventItem in events.Items)
-                {
-                    result.Add(new CalendarEvents(eventItem));
-                }
+                Console.WriteLine($"Can't get GoogleCalendar data: {ex.Message}");
             }
-
-            moreEvents = !string.IsNullOrEmpty(events.NextPageToken);
-
-            return result.ToArray();
+            return null;
         }
     }
 }

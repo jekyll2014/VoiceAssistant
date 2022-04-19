@@ -8,4 +8,10 @@
     <ProjectReference Include="..\PluginInterface\PluginInterface.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="KeyCodes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

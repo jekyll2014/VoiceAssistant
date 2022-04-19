@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,7 +72,7 @@ namespace VoiceAssistant
         {
             var pluginInterfaceAssembly = typeof(T).Assembly.FullName;
             _assembliesToNotLoadIntoContext = GetReferencedAssemblyFullNames(pluginInterfaceAssembly);
-            _assembliesToNotLoadIntoContext.Add(pluginInterfaceAssembly);
+            _assembliesToNotLoadIntoContext?.Add(pluginInterfaceAssembly);
             _resolver = new AssemblyDependencyResolver(pluginPath);
         }
 
@@ -79,8 +81,8 @@ namespace VoiceAssistant
             return AppDomain.CurrentDomain
                 .GetAssemblies()
                 .FirstOrDefault(t => t.FullName == referencedBy)?
-                .GetReferencedAssemblies()
-                .Select(t => t.FullName)
+                .GetReferencedAssemblies()?
+                .Select(t => t.FullName)?
                 .ToHashSet();
         }
 
@@ -88,7 +90,7 @@ namespace VoiceAssistant
         {
             //Do not load the Plugin Interface DLL into the adapter's context
             //otherwise IsAssignableFrom is false. 
-            if (_assembliesToNotLoadIntoContext.Contains(assemblyName.FullName))
+            if (_assembliesToNotLoadIntoContext?.Contains(assemblyName.FullName) ?? true)
                 return null;
 
             var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);

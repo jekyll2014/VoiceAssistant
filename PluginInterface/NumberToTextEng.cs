@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using System;
 
 namespace PluginInterface
 {
@@ -31,11 +33,11 @@ namespace PluginInterface
                 result += ConvertBigNumberToString(val, (long)1e6, "million");
             else if (val < 1e12)
                 result += ConvertBigNumberToString(val, (long)1e9, "billion");
-            else if (val < 1e12)
+            else if (val < 1e15)
                 result += ConvertBigNumberToString(val, (long)1e12, "trillion");
-            else if (val < 1e12)
+            else if (val < 1e18)
                 result += ConvertBigNumberToString(val, (long)1e15, "quadrillion");
-            else if (val < 1e12)
+            else if (val < 1e21)
                 result += ConvertBigNumberToString(val, (long)1e18, "quintillion");
             else
                 return "more than quintillion";
