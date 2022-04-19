@@ -1,0 +1,164 @@
+{
+  "CurrencyServiceUrl": "http://www.cbr.ru/scripts/XML_daily.asp",
+  "CurrencyDecimalSeparatorWord": "dot",
+  "Commands": [
+    {
+      "CurencyCode": "USD",
+      "RateDecimalRound": 1,
+      "Response": "{1} dollar is {2} rubles",
+      "Name": "Short USD request",
+      "Tokens": [
+        {
+          "Value": [
+            "dollar"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "exchange"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "rate"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "CurencyCode": "USD",
+      "RateDecimalRound": 1,
+      "Response": "{1} dollar is {2} rubles",
+      "Name": "Long USD request",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "is "
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "dollar"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "exchange"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "rate"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "CurencyCode": "EUR",
+      "RateDecimalRound": 1,
+      "Response": "{1} euro is {2} rubles",
+      "Name": "Short EUR request",
+      "Tokens": [
+        {
+          "Value": [
+            "euro"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "exchange"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "rate"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "CurencyCode": "EUR",
+      "RateDecimalRound": 1,
+      "Response": "{1} euro is {2} rubles",
+      "Name": "Long EUR request",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "is "
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "euro"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "exchange"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "rate"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "KeyNotFound": "key code not found",
+  "ProcessNotFound": "process not found",
+  "Commands": [
+    {
+      "Response": "switched forth",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_NEXT"
+      ],
+      "Name": "MPC next",
+      "Tokens": [
+        {
+          "Value": [
+            "next"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "movie"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "switched back",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_PRIOR"
+      ],
+      "Name": "MPC previous",
+      "Tokens": [
+        {
+          "Value": [
+            "previous"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "movie"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "movie started",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_SPACE"
+      ],
+      "Name": "MPC play",
+      "Tokens": [
+        {
+          "Value": [
+            "start",
+			"play"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "movie"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "movie stopped",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_DECIMAL"
+      ],
+      "Name": "MPC stop",
+      "Tokens": [
+        {
+          "Value": [
+            "stop"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "movie"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "movie paused",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_SPACE"
+      ],
+      "Name": "MPC play/pause",
+      "Tokens": [
+        {
+          "Value": [
+            "pause"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "movie"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "volume increased",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_UP",
+        "VK_UP",
+        "VK_UP",
+        "VK_UP"
+      ],
+      "Name": "MPC volume up",
+      "Tokens": [
+        {
+          "Value": [
+            "volume"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "up"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "volume decreased",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_DOWN",
+        "VK_DOWN",
+        "VK_DOWN",
+        "VK_DOWN"
+      ],
+      "Name": "MPC volume down",
+      "Tokens": [
+        {
+          "Value": [
+            "volume"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "down"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

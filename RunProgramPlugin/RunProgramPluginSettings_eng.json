@@ -1,0 +1,118 @@
+{
+  "CanNotClose": "can not close",
+  "NotRunning": "not running",
+  "CanNotRun": "can not run",
+  "AlreadyRunning": "already running",
+  "Commands": [
+    {
+      "Response": "Visual Studio Code is running",
+      "CommandLine": "code",
+      "IsStopCommand": false,
+      "AllowMultiple": true,
+      "Name": "Run VSCode",
+      "Tokens": [
+        {
+          "Value": [
+            "run",
+            "open"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "vs"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "code"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Visual Studio Code closed",
+      "CommandLine": "code",
+      "IsStopCommand": true,
+      "AllowMultiple": true,
+      "Name": "Stop VSCode",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "close"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "vs"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "code"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "notepad is running",
+      "CommandLine": "notepad++.exe",
+      "IsStopCommand": false,
+      "AllowMultiple": false,
+      "Name": "Run notepad++",
+      "Tokens": [
+        {
+          "Value": [
+            "run",
+            "open"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "notepad"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "notepad is closed",
+      "CommandLine": "notepad++.exe",
+      "IsStopCommand": true,
+      "AllowMultiple": false,
+      "Name": "Stop notepad++",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "close"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "notepad"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

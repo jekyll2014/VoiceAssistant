@@ -1,0 +1,104 @@
+{
+  "CanNotClose": "can not close",
+  "NotRunning": "not running",
+  "CanNotRun": "can not run",
+  "AlreadyRunning": "already running",
+  "Commands": [
+    {
+      "Response": "Yandex is running",
+      "URL": "www.yandex.ru",
+      "isStopCommand": false,
+      "useStandAloneBrowser": true,
+      "Name": "Run Yandex",
+      "Tokens": [
+        {
+          "Value": [
+            "Start",
+            "Open"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "yandex"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Yandex is closed",
+      "URL": "www.yandex.ru",
+      "isStopCommand": true,
+      "useStandAloneBrowser": true,
+      "Name": "Stop Yandex",
+      "Tokens": [
+        {
+          "Value": [
+            "Stop",
+            "Close"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "yandex"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Google is running",
+      "URL": "www.google.com",
+      "isStopCommand": false,
+      "useStandAloneBrowser": false,
+      "Name": "Run Google",
+      "Tokens": [
+        {
+          "Value": [
+            "Start",
+            "Open"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "google"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Google is closed",
+      "URL": "www.google.com",
+      "isStopCommand": true,
+      "useStandAloneBrowser": false,
+      "Name": "Stop Google",
+      "Tokens": [
+        {
+          "Value": [
+            "Stop",
+            "Close"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "google"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

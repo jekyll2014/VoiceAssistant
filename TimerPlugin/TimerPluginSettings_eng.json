@@ -1,0 +1,334 @@
+{
+  "AlarmSound": "timer.wav",
+  "IncorrectTime": "incorrect time",
+  "TimerNotFound": "timer not found",
+  "Commands": [
+    {
+      "Response": "Timer set to {1} minutes",
+      "isStopCommand": false,
+      "Name": "Run timer minutes",
+      "Tokens": [
+        {
+          "Value": [
+            "set",
+            "start",
+            "run"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "timer"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "to"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "minute",
+            "minutes"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "{1} minutes timer stopped",
+      "isStopCommand": true,
+      "Name": "Stop timer minutes",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "delete"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "minute",
+            "minutes"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+		{
+          "Value": [
+            "timer"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+      ]
+    },
+    {
+      "Response": "Timer set to {2} seconds",
+      "isStopCommand": false,
+      "Name": "Run timer seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "set",
+            "start",
+            "run"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "timer"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "to"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "second",
+            "seconds"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймер на {2} секунд остановлен",
+      "isStopCommand": true,
+      "Name": "Stop timer seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "delete"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "second",
+            "seconds"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "timer"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Timer set to {1} minutes {2} seconds",
+      "isStopCommand": false,
+      "Name": "Run timer minutes, seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "set",
+            "start",
+            "run"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "timer"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "to"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "minute",
+            "minutes"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "second",
+            "seconds"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "{1} minutes {2} seconds timer stopped",
+      "isStopCommand": true,
+      "Name": "Stop timer minutes, seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "delete"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "minute",
+            "minutes"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "second",
+            "seconds"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+		{
+          "Value": [
+            "timer"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Timers stopped",
+      "isStopCommand": true,
+      "Name": "Stop timers",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "delete"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "timers"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "all timers stopped",
+      "isStopCommand": true,
+      "Name": "Stop all timers",
+      "Tokens": [
+        {
+          "Value": [
+            "stop",
+            "delete"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "all"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "timers"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

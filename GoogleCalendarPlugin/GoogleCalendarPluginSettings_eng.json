@@ -1,0 +1,152 @@
+{
+  "ConfigurationNote": [
+    "Interpolation macros:",
+    "Only for \"SingleEventMessage\":",
+    "{Attendees} - list of attendees",
+    "{Description} - event description",
+    "{Location} - event location",
+    "{Summary} - event summary",
+    "{Length} - event duration",
+    "{StartYear} - event start year",
+    "{StartMonth} - event start month",
+    "{StartDay} - event start day",
+    "{StarDate} - event start day and month",
+    "{StarTime} - event start hour and minute",
+    "{EndYear} - event end year",
+    "{EndMonth} - event end month",
+    "{EndDay} - event end day",
+    "{EndDate} - event end day and month",
+    "{EndTime} - event end hour and minute",
+    "",
+    "Only for \"Response\":",
+    "{1} - use SingleEventMessage sample"
+  ],
+  "Commands": [
+    {
+      "SingleEventMessage": "{StarTime} - {Summary}",
+      "Response": "Today's events: {1}",
+      "CalendarId": "",
+      "DaysStart": 0,
+      "DaysCount": 1,
+      "MaxEvents": 10,
+      "Name": "Today's events",
+      "Tokens": [
+        {
+          "Value": [
+            "Schedule",
+            "Events"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "for"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "today"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "SingleEventMessage": "{StarTime} - {Summary}",
+      "Response": "Tomorrow's events: {1}",
+      "CalendarId": "",
+      "DaysStart": 1,
+      "DaysCount": 1,
+      "MaxEvents": 10,
+      "Name": "Tomorrow's events",
+      "Tokens": [
+        {
+          "Value": [
+            "Schedule",
+            "Events"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "for"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "tomorrow"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "SingleEventMessage": "{Summary}",
+      "Response": "Today's birthdays: {1}",
+      "CalendarId": "addressbook#contacts@group.v.calendar.google.com",
+      "DaysStart": 0,
+      "DaysCount": 1,
+      "MaxEvents": 10,
+      "Name": "Today's birthdays",
+      "Tokens": [
+        {
+          "Value": [
+            "birthdays"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "for"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "today"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "SingleEventMessage": "{StarDate} - {Summary}",
+      "Response": "Upcoming birthdays: {1}",
+      "CalendarId": "addressbook#contacts@group.v.calendar.google.com",
+      "DaysStart": 0,
+      "DaysCount": 7,
+      "MaxEvents": 10,
+      "Name": "Upcoming birthdays",
+      "Tokens": [
+        {
+          "Value": [
+            "Upcoming"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "birthdays"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ],
+  "MoreResultsAvailableMessage": "and there are more events not fitted the list",
+  "NoEventsMessage": "no events",
+  "NoDataMessage": "can not get data from server"
+}

@@ -1,0 +1,417 @@
+{
+  "ConfigurationNote": [
+    "Interpolation macros:",
+    "Only for \"Now\" commands:",
+    "{WeatherDescription} - weather description",
+    "{Temperature} - temperature",
+    "{Humidity} - humidity, %",
+    "{Pressure} - pressure, hPa",
+    "{WindSpeed} - wind speed",
+    "{WindDirection} - wind direction, degree",
+    "{WindDirectionName} - wind direction name",
+    "{Clouds} - cloudiness, %",
+    "",
+    "Only for \"Today\" and \"Tomorrow\" commands:",
+    "{MorningPhrase} - use MorningPhrase sample",
+    "{DayPhrase} - use DayPhrase sample",
+    "{EveningPhrase} - use EveningPhrase sample",
+    "{NightPhrase} - use NightPhrase sample",
+    "",
+    "Only for \"Morning/Day/Evening/Night\" phrases:",
+    "{WeatherDescription} - weather description",
+    "{Temperature} - average temperature",
+    "{MinTemperature} - min. temperature",
+    "{MaxTemperature} - max. temperature",
+    "{Humidity} - average humidity, %",
+    "{MinHumidity} - min. humidity, %",
+    "{MaxHumidity} - max. humidity, %",
+    "{Pressure} - average pressure, hPa",
+    "{MinPressure} - min. pressure, hPa",
+    "{MaxPressure} - max. pressure, hPa",
+    "{WindSpeed} - average wind speed",
+    "{MinWindSpeed} - min. wind speed",
+    "{MaxWindSpeed} - max. wind speed",
+    "{WindDirection} - average wind direction, degree",
+    "{MinWindDirection} - min. wind direction, degree",
+    "{MaxWindDirection} - max. wind direction, degree",
+    "{WindDirectionName} - average wind direction name",
+    "{MinWindDirectionName} - min. wind direction name",
+    "{MaxWindDirectionName} - max. wind direction name",
+    "{Clouds} - average cloudiness, %",
+    "{MinClouds} - min. cloudiness, %",
+    "{MaxClouds} - max. cloudiness, %"
+  ],
+  "ApiKey": "",
+  "NoDataPhrase": "Не могу получить данные с сервера",
+  "WindDirections": [
+    {
+      "Item1": "Northern",
+      "Item2": 23
+    },
+    {
+      "Item1": "Northe-eastern",
+      "Item2": 68
+    },
+    {
+      "Item1": "eastern",
+      "Item2": 113
+    },
+    {
+      "Item1": "South-eastern",
+      "Item2": 158
+    },
+    {
+      "Item1": "Southern",
+      "Item2": 203
+    },
+    {
+      "Item1": "South-Western",
+      "Item2": 248
+    },
+    {
+      "Item1": "Western",
+      "Item2": 293
+    },
+    {
+      "Item1": "Northe-Western",
+      "Item2": 338
+    },
+    {
+      "Item1": "Northern",
+      "Item2": 361
+    }
+  ],
+  "WeatherCurrentQuery": "https://api.openweathermap.org/data/2.5/weather?q={2}&appid={1}&units=metric&lang=ru",
+  "WeatherForecastQuery": "https://api.openweathermap.org/data/2.5/forecast?q={2}&appid={1}&units=metric&lang=ru",
+  "MorningPhrase": "It will be {WeatherDescription} in the morning, the temperature is from {MinTemperature} to {MaxTemperature} degree. The humidity is {Humidity} persent. The wind is {WindDirectionName}, {WindSpeed} meter per second",
+  "DayPhrase": "It will be {WeatherDescription} in the day time, the temperature is from {MinTemperature} to {MaxTemperature} degree. The humidity is {Humidity} persent. The wind is {WindDirectionName}, {WindSpeed} meter per second",
+  "EveningPhrase": "It will be {WeatherDescription} in the evening, the temperature is from {MinTemperature} to {MaxTemperature} degree. The humidity is {Humidity} persent. The wind is {WindDirectionName}, {WindSpeed} meter per second",
+  "NightPhrase": "It will be {WeatherDescription} in the night, the temperature is from {MinTemperature} to {MaxTemperature} degree. The humidity is {Humidity} persent. The wind is {WindDirectionName}, {WindSpeed} meter per second",
+  "MorningStartHour": 7,
+  "DayStartHour": 10,
+  "EveningStartHour": 18,
+  "NightStartHour": 22,
+  "Commands": [
+    {
+      "DayTime": "Now",
+      "CityId": "Tashkent,uz",
+      "Response": "It is {WeatherDescription} now in Tashkent. The temperature is {Temperature} degree. Humidity is {Humidity} percent. The wind is {WindDirectionName}, {WindSpeed} meter per second",
+      "Name": "Short weather now",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "is"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "weather"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "now"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Today",
+      "CityId": "Tashkent,uz",
+      "Response": "Tashkent weather forecast for today: {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Short weather today",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "is"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "be"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "weather"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "today"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Tomorrow",
+      "CityId": "Tashkent,uz",
+      "Response": "Tashkent weather forecast for tomorrow: {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Short weather tomorrow",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "will"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "be"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "weather"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "tomorrow"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Now",
+      "CityId": "Moscow,ru",
+      "Response": "It is {WeatherDescription} now in Moscow. The temperature is {Temperature} degree. Humidity is {Humidity} percent. The wind is {WindDirectionName}, {WindSpeed} meter per second",
+      "Name": "Moscow weather now",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "is"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "weather"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "now"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "in"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "Moscow"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Today",
+      "CityId": "Moscow,ru",
+      "Response": "The weather in Moscow for today: {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Moscow weather today",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "is"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "weather"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "today"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "in"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "Moscow"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Tomorrow",
+      "CityId": "Moscow,ru",
+      "Response": "The weather in Moscow for tomorrow: {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Moscow weather tomorrow",
+      "Tokens": [
+        {
+          "Value": [
+            "What"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "will"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "be"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "the"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "weather"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "tomorrow"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "in"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "Moscow"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}
