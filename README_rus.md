@@ -21,11 +21,18 @@
 Для реализации я выбрал язык C#, как наиболее подходящий из знакомых мне. Фреймворк - устоявшийся .NET Core 3.1 LTS.
 
 Основные модули, на которых основывается проект:
-
 - Модуль распознавания - VOSK
 - Генерация речи - Windows SAPI5 с голосами
 - Захват и вывод аудио - NAudio
 - Мягкое сравнение строк - FuzzySharp
+
+Использованные материалы:
+- VOSK voice recognition module: https://alphacephei.com/vosk/
+  language models: https://alphacephei.com/vosk/models
+- RHVoice Lab voices for Windows SAPI5: https://rhvoice.su/voices/
+- NAudio project: https://github.com/naudio/NAudio
+- Weighting string comparison alghoritm: https://github.com/JakeBayer/FuzzySharp
+- Plugin system: https://makolyte.com/csharp-generic-plugin-loader/
 
 Проект выложен на GitHub и понемногу развивается моими силами.
 
