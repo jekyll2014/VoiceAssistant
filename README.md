@@ -16,6 +16,7 @@ Based on the idea of https://github.com/janvarev/Irene-Voice-Assistant and the m
 - RHVoice Lab voices for Windows SAPI5: https://rhvoice.su/voices/
 - NAudio project: https://github.com/naudio/NAudio
 - Weighting string comparison alghoritm: https://github.com/JakeBayer/FuzzySharp
+- Plugin system: https://makolyte.com/csharp-generic-plugin-loader/
 
 ### ToDo:
 - move core messages into resources
