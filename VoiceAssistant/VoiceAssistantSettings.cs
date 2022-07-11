@@ -25,5 +25,7 @@ namespace VoiceAssistant
         public string CommandNotFoundMessage = "Команда не найдена";
         public bool AllowPluginsToListenToSound = false;
         public bool AllowPluginsToListenToWords = false;
+        public bool AllowPluginsToInjectSound = false;
+        public bool AllowPluginsToInjectWords = false;
     }
 }

@@ -12,8 +12,10 @@ namespace PluginInterface
         protected readonly string PluginPath;
         protected readonly string PluginConfigFile;
         protected readonly IAudioOutSingleton AudioOut;
-        public volatile bool AcceptsSound = false;
-        public volatile bool AcceptsWords = false;
+        public volatile bool CanAcceptSound = false;
+        public volatile bool CanAcceptWords = false;
+        public volatile bool CanInjectSound = false;
+        public volatile bool CanInjectWords = false;
         private static readonly object SyncRootAudio = new object();
         private static readonly object SyncRootWords = new object();
         private readonly List<string> _recognizedWords = new List<string>();
@@ -27,6 +29,12 @@ namespace PluginInterface
 
         protected PluginCommand[] _commands;
         public PluginCommand[] Commands => _commands;
+
+        public delegate void ExternalAudioCommandHandler(byte[] buffer, int samplingRate, int bits, int channels);
+        public event ExternalAudioCommandHandler ExternalAudioCommand;
+
+        public delegate void ExternalTextCommandHandler(string command);
+        public event ExternalTextCommandHandler ExternalTextCommand;
 
         protected PluginBase(IAudioOutSingleton audioOut, string currentCulture, string pluginPath)
         {
@@ -52,7 +60,7 @@ namespace PluginInterface
             });
         }
 
-        public string[] GetWords()
+        protected string[] GetWords()
         {
             lock (SyncRootWords)
             {
@@ -74,7 +82,7 @@ namespace PluginInterface
             });
         }
 
-        public byte[] GetSound()
+        protected byte[] GetSound()
         {
             lock (SyncRootAudio)
             {
@@ -82,6 +90,16 @@ namespace PluginInterface
                 _recordedAudio.Clear();
                 return result;
             }
+        }
+
+        protected void InjectTextCommand(string command)
+        {
+            ExternalTextCommand.Invoke(command);
+        }
+
+        protected void InjectAudioCommand(byte[] buffer, int samplingRate, int bits, int channels)
+        {
+            ExternalAudioCommand.Invoke(buffer, samplingRate, bits, channels);
         }
     }
 }

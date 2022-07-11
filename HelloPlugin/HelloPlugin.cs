@@ -28,8 +28,12 @@ namespace HelloPlugin
             }
 
             // example of listening to the audio/word stream from core module.
-            //base.AcceptsSound = true;
-            //base.AcceptsWords = true;
+            //base.CanAcceptSound = true;
+            //base.CanAcceptWords = true;
+
+            // example of injecting command audio/text to execute by main module.
+            //base.CanInjectSound = true;
+            //base.CanInjectWords = true;
         }
 
         public override void Execute(string commandName, List<Token> commandTokens)
@@ -40,8 +44,7 @@ namespace HelloPlugin
             {
                 return;
             }
-
-            // example of listening to the audio/word stream from core module.
+            // example of listening to the audio/word stream from core module
             /*
             var sndData = GetSound();
             AudioOut.PlayDataBuffer(sndData);
@@ -53,6 +56,10 @@ namespace HelloPlugin
             }
             Console.WriteLine($"ReceivedText: {wordsData}");
             */
+
+            // example of injecting command audio/text to execute by main module
+            /*InjectTextCommand("Вася привет");
+            InjectAudioCommand(new byte[1024], 44100, 16, 1);*/
 
             AudioOut.Speak(command.Response);
         }
