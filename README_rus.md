@@ -22,10 +22,13 @@
 
 Основные модули, на которых основывается проект:
 
-- Модуль распознавания - VOSK
-- Генерация речи - Windows SAPI5 с голосами
-- Захват и вывод аудио - NAudio
-- Мягкое сравнение строк - FuzzySharp
+Использованные материалы:
+- Модуль распознавания - VOSK: https://alphacephei.com/vosk/
+  языковые модели для распознавания: https://alphacephei.com/vosk/models
+- Генерация речи - Windows SAPI5 с голосами RHVoice Lab: https://rhvoice.su/voices/
+- Захват и вывод аудио - NAudio: https://github.com/naudio/NAudio
+- Мягкое сравнение строк - FuzzySharp: https://github.com/JakeBayer/FuzzySharp
+- Работа с плагинами: https://makolyte.com/csharp-generic-plugin-loader/
 
 Проект выложен на GitHub и понемногу развивается моими силами.
 
