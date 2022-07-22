@@ -8,7 +8,7 @@ namespace PluginInterface
 {
     public abstract class PluginBase
     {
-        public const string PluginInterfaceVersion = "1.0";
+        public const string PluginInterfaceVersion = "1.1";
         protected readonly string PluginPath;
         protected readonly string PluginConfigFile;
         protected readonly IAudioOutSingleton AudioOut;
@@ -20,6 +20,10 @@ namespace PluginInterface
         private static readonly object SyncRootWords = new object();
         private readonly List<string> _recognizedWords = new List<string>();
         private readonly List<byte> _recordedAudio = new List<byte>();
+        private readonly int _recognizedWordsBufferLimit = 1024;
+        private readonly int _recordedAudioBufferLimit = 1024 * 1024;
+        private readonly bool _recognizedWordsAlwaysBuffer = true;
+        private readonly bool _recordedAudioAlwaysBuffer = true;
 
         protected string _pluginName;
         public string PluginName => _pluginName;
@@ -35,6 +39,12 @@ namespace PluginInterface
 
         public delegate void ExternalTextCommandHandler(string command);
         public event ExternalTextCommandHandler ExternalTextCommand;
+
+        public delegate void RecordedAudioCommandHandler(byte[] buffer, int samplingRate, int bits, int channels);
+        public event RecordedAudioCommandHandler RecordedAudioCommand;
+
+        public delegate void RecordedTextCommandHandler(string command);
+        public event RecordedTextCommandHandler RecordedTextCommand;
 
         protected PluginBase(IAudioOutSingleton audioOut, string currentCulture, string pluginPath)
         {
@@ -55,7 +65,21 @@ namespace PluginInterface
             {
                 lock (SyncRootWords)
                 {
-                    _recognizedWords.AddRange(tmpWords.Split(' '));
+                    if (RecordedTextCommand == null || _recognizedWordsAlwaysBuffer)
+                    {
+                        var newBuffer = tmpWords.Split(' ');
+                        var newBufferLength = _recognizedWords.Count + newBuffer.Length;
+
+                        if (newBufferLength > _recognizedWordsBufferLimit)
+                        {
+                            var removeWords = newBufferLength - _recognizedWordsBufferLimit;
+                            _recognizedWords.RemoveRange(0, removeWords);
+                        }
+
+                        _recognizedWords.AddRange(newBuffer);
+                    }
+
+                    RecordedTextCommand?.Invoke(words);
                 }
             });
         }
@@ -70,14 +94,27 @@ namespace PluginInterface
             }
         }
 
-        public void AddSound(byte[] data)
+        public void AddSound(byte[] data, int samplingRate, int bits, int channels)
         {
             var tmpData = data;
             Task.Run(() =>
             {
                 lock (SyncRootAudio)
                 {
-                    _recordedAudio.AddRange(tmpData);
+                    if (RecordedAudioCommand == null || _recordedAudioAlwaysBuffer)
+                    {
+                        var newBufferLength = _recordedAudio.Count + tmpData.Length;
+
+                        if (newBufferLength > _recordedAudioBufferLimit)
+                        {
+                            var removeBytes = newBufferLength - _recordedAudioBufferLimit;
+                            _recordedAudio.RemoveRange(0, removeBytes);
+                        }
+
+                        _recordedAudio.AddRange(tmpData);
+                    }
+
+                    RecordedAudioCommand?.Invoke(data, samplingRate, bits, channels);
                 }
             });
         }
@@ -94,12 +131,12 @@ namespace PluginInterface
 
         protected void InjectTextCommand(string command)
         {
-            ExternalTextCommand.Invoke(command);
+            ExternalTextCommand?.Invoke(command);
         }
 
         protected void InjectAudioCommand(byte[] buffer, int samplingRate, int bits, int channels)
         {
-            ExternalAudioCommand.Invoke(buffer, samplingRate, bits, channels);
+            ExternalAudioCommand?.Invoke(buffer, samplingRate, bits, channels);
         }
     }
 }

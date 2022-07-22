@@ -95,11 +95,8 @@ namespace VoiceAssistant
             commandAwaitTimer.Elapsed += CommandAwaitTimerElapsed;
 
             // print out assistant name
-            Console.WriteLine("\r\nAssistant names:");
-            foreach (var name in _appConfig.CallSign)
-            {
-                Console.Write($"  {name}");
-            }
+            Console.WriteLine($"{Environment.NewLine}Assistant names:");
+            Console.WriteLine($"  {_appConfig.CallSign.Aggregate((n, m) => { return n += $",{Environment.NewLine}  " + m; })}");
 
             Console.WriteLine();
 
@@ -117,8 +114,8 @@ namespace VoiceAssistant
             }
 
             audioOut.PlayFile(_appConfig.StartSound);
-            Console.WriteLine("\r\nAssistant started");
-            Console.WriteLine("\r\n" + GetHelp());
+            Console.WriteLine($"{Environment.NewLine}Assistant started");
+            Console.WriteLine($"{Environment.NewLine}{GetHelp()}");
 
             // wait for the program to stop
             var exitFlag = false;
@@ -135,11 +132,11 @@ namespace VoiceAssistant
                 }
                 else if (command.Equals("help", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("\r\n" + GetHelp());
+                    Console.WriteLine($"{Environment.NewLine}GetHelp()");
                 }
                 else if (command.Equals("commands", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("\r\n" + GetPluginsCommands(_plugins));
+                    Console.WriteLine($"{Environment.NewLine}{GetPluginsCommands(_plugins)}");
                 }
             }
 
@@ -154,10 +151,10 @@ namespace VoiceAssistant
 
         private static string GetHelp()
         {
-            return "Enter\r\n" +
-                "\"help\" to get help on console commands" +
-                "\"commands\" to get help on plugins commands" +
-                $"\"//{_appConfig.CallSign} ******\" to start command manually";
+            return $"Enter{Environment.NewLine}" +
+                $"\"help\" to get help on console commands{Environment.NewLine}" +
+                $"\"commands\" to get help on plugins commands{Environment.NewLine}" +
+                $"\"//[{_appConfig.CallSign.Aggregate((n, m) => { return n += ", " + m; })}] ******\" to start command manually";
         }
 
         private static VoiceAssistantSettings LoadConfig()
@@ -175,7 +172,7 @@ namespace VoiceAssistant
             var audioDeviceNumber = WaveOut.DeviceCount;
             var recordOutputs = new Dictionary<int, string>(audioDeviceNumber + 1);
             var selectedDevice = -1;
-            Console.WriteLine("\r\nAvailable output devices:");
+            Console.WriteLine($"{Environment.NewLine}Available output devices:");
 
             for (var n = -1; n < audioDeviceNumber; n++)
             {
@@ -206,7 +203,7 @@ namespace VoiceAssistant
         {
             var recordDeviceNumber = WaveIn.DeviceCount;
             var recordInputs = new Dictionary<int, string>(recordDeviceNumber + 1);
-            Console.WriteLine("\r\nAvailable input devices:");
+            Console.WriteLine($"{Environment.NewLine}Available input devices:");
             var selectedDevice = -1;
 
             for (var n = -1; n < recordDeviceNumber; n++)
@@ -239,7 +236,7 @@ namespace VoiceAssistant
         private static AudioOutSingleton InitTextToSpeech(WaveOut waveOut)
         {
             var synthesizer = new SpeechSynthesizer();
-            Console.WriteLine("\r\nAvailable voices:");
+            Console.WriteLine($"{Environment.NewLine}Available voices:");
 
             var voiceSelected = false;
             foreach (var voice in synthesizer.GetInstalledVoices())
@@ -313,11 +310,11 @@ namespace VoiceAssistant
 
             //Load all plugins from a folder
             var plugins = pluginLoader.LoadAll(pluginFolder, _appConfig.PluginFileMask, audioOut, _appConfig.SpeakerCulture);
-            Console.WriteLine($"\r\n{plugins.Count} plugin(s) loaded");
+            Console.WriteLine($"{Environment.NewLine}{plugins.Count} plugin(s) loaded");
 
             foreach (var plugin in plugins)
             {
-                Console.WriteLine($"\r\nPlugin: {plugin.PluginName}");
+                Console.WriteLine($"{Environment.NewLine}Plugin: {plugin.PluginName}");
 
                 if (_appConfig.AllowPluginsToInjectSound && plugin.CanInjectSound)
                 {
@@ -341,10 +338,13 @@ namespace VoiceAssistant
                     Console.WriteLine($"This plugin can capture text commands!");
                 }
 
-                foreach (var com in plugin.Commands)
+                if (plugin.Commands != null)
                 {
-                    Console.WriteLine($" - Command name: {com.Name}");
-                    Console.WriteLine($"     Phrase: {com}");
+                    foreach (var com in plugin.Commands)
+                    {
+                        Console.WriteLine($" - Command name: {com.Name}");
+                        Console.WriteLine($"     Phrase: {com}");
+                    }
                 }
             }
 
@@ -359,10 +359,13 @@ namespace VoiceAssistant
             {
                 commands.AppendLine($"Plugin: {plugin.PluginName}");
 
-                foreach (var com in plugin.Commands)
+                if (plugin.Commands != null)
                 {
-                    commands.AppendLine($" - Command name: {com.Name}");
-                    commands.AppendLine($"\tPhrase: {com}");
+                    foreach (var com in plugin.Commands)
+                    {
+                        commands.AppendLine($" - Command name: {com.Name}");
+                        commands.AppendLine($"\tPhrase: {com}");
+                    }
                 }
             }
 
@@ -395,7 +398,7 @@ namespace VoiceAssistant
                 {
                     var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
 
-                    // copy audio data to plugin's buffer if allowed anf if any plugin wants
+                    // copy audio data to plugin's buffer if allowed and if any plugin wants
                     if (_appConfig.AllowPluginsToListenToSound)
                     {
                         var recordingPlugins = _plugins.Where(n => n.CanAcceptSound);
@@ -408,7 +411,7 @@ namespace VoiceAssistant
 
                             foreach (var plugin in recordingPlugins)
                             {
-                                plugin.AddSound(dataCopy);
+                                plugin.AddSound(dataCopy, _appConfig.AudioInSampleRate, 16, 1);
                             }
                         }
                     }
@@ -478,15 +481,18 @@ namespace VoiceAssistant
 
                         foreach (var plugin in _plugins)
                         {
-                            foreach (var command in plugin.Commands)
+                            if (plugin.Commands != null)
                             {
-                                var newCmdItem = new ProcessingCommand
+                                foreach (var command in plugin.Commands)
                                 {
-                                    PluginName = plugin.PluginName,
-                                    ExpectedCommand = command
-                                };
+                                    var newCmdItem = new ProcessingCommand
+                                    {
+                                        PluginName = plugin.PluginName,
+                                        ExpectedCommand = command
+                                    };
 
-                                currentCommand.Add(newCmdItem);
+                                    currentCommand.Add(newCmdItem);
+                                }
                             }
                         }
 
