@@ -1,0 +1,77 @@
+{
+  "Commands": [
+    {
+      "Response": "Nice to hear you",
+      "Name": "Greeting informal",
+      "Tokens": [
+        {
+          "Value": [
+            "Greeting"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "And you too",
+      "Name": "Greeting formal",
+      "Tokens": [
+        {
+          "Value": [
+            "Hello"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Have a good day too",
+      "Name": "Greeting wishing",
+      "Tokens": [
+        {
+          "Value": [
+            "Have"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+		{
+          "Value": [
+            "a"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+		{
+          "Value": [
+            "good"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "day"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Hi",
+      "Name": "Greeting short informal",
+      "Tokens": [
+        {
+          "Value": [
+            "Hi"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}
