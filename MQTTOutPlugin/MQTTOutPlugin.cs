@@ -1,4 +1,6 @@
-﻿using MQTTnet;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Diagnostics;
 using MQTTnet.Implementations;
@@ -15,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace MQTTOutPlugin
 {
-    public class MQTTOutPlugin : PluginBase
+    public class MQTTOutPlugin : PluginBase, IDisposable
     {
         private readonly MQTTOutPluginCommand[] MQTTOutCommands;
         public string _requestServer = "";
@@ -32,8 +34,7 @@ namespace MQTTOutPlugin
 
         private static readonly IMqttNetLogger Logger = new MqttNetEventLogger();
         private readonly IMqttClient _mqttClient = new MqttClient(new MqttClientAdapterFactory(), Logger);
-
-        System.Timers.Timer reconnectTimer = new System.Timers.Timer();
+        private readonly System.Timers.Timer reconnectTimer = new System.Timers.Timer();
 
         public MQTTOutPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
@@ -60,15 +61,15 @@ namespace MQTTOutPlugin
                 _commands = newCmds;
             }
 
-            _mqttClient.DisconnectedAsync += MqttDisconnectedHandler;
-            ConnectMQTT(false);
-            // example of listening to the audio/word stream from core module.
-            //base.CanAcceptSound = true;
-            //base.CanAcceptWords = true;
+            reconnectTimer.Interval = _reconnectTimeOut;
+            reconnectTimer.Elapsed += Timer_reconnect_Tick;
+            reconnectTimer.AutoReset = true;
 
-            // example of injecting command audio/text to execute by main module.
-            //base.CanInjectSound = true;
-            //base.CanInjectWords = true;
+            ConnectMQTT(false);
+
+            // example of listening to the audio/word stream from core module.
+            // base.CanAcceptSound = true;
+            // base.CanAcceptWords = true;
         }
 
         public override void Execute(string commandName, List<Token> commandTokens)
@@ -76,9 +77,7 @@ namespace MQTTOutPlugin
             var command = MQTTOutCommands.FirstOrDefault(n => n.Name == commandName);
 
             if (command == null)
-            {
                 return;
-            }
 
             if (string.IsNullOrEmpty(command.MQTTRequestTopic) || string.IsNullOrEmpty(command.MQTTRequestText))
             {
@@ -86,16 +85,12 @@ namespace MQTTOutPlugin
 
                 return;
             }
-            //var subscribed = SubscribeMQTT(command.MQTTRequestTopic).Result;
 
-            if (/*subscribed &&*/ SendToMQTT(command.MQTTRequestTopic, command.MQTTRequestText).Result)
-            {
+            var subscribed = SubscribeMQTT(command.MQTTRequestTopic).Result;
+            if (subscribed && SendToMQTT(command.MQTTRequestTopic, command.MQTTRequestText).Result)
                 AudioOut.Speak(command.PluginResponse);
-            }
             else
-            {
                 AudioOut.Speak(_failedConnectionResponse);
-            }
 
             // example of listening to the audio/word stream from core module
             /*
@@ -115,7 +110,7 @@ namespace MQTTOutPlugin
             InjectAudioCommand(new byte[1024], 44100, 16, 1);*/
         }
 
-        private async Task<bool>  ConnectMQTT(bool waitConnection)
+        private async Task<bool> ConnectMQTT(bool waitConnection)
         {
             var options = new MqttClientOptionsBuilder()
                 .WithClientId(_clientID + (_addTimeStampToClientID
@@ -138,23 +133,97 @@ namespace MQTTOutPlugin
                 catch (Exception ex)
                 {
                     Console.WriteLine("MQTT connection exception: " + ex.Message);
-                    DisconnectMQTT();
+                    await DisconnectMQTT();
+
                     return;
                 }
 
                 if (!_mqttClient.IsConnected)
-                    DisconnectMQTT();
+                    await DisconnectMQTT();
             }).ConfigureAwait(waitConnection);
 
             if (!_mqttClient.IsConnected)
+            {
+                await DisconnectMQTT();
                 return false;
+            }
+
+            _mqttClient.DisconnectedAsync -= MqttDisconnectedHandler;
+            _mqttClient.DisconnectedAsync += MqttDisconnectedHandler;
+
+            //await SubscribeMQTT(MQTTInTopics.Select(n => n.MQTTSubscribeTopic));
+
+            return true;
+        }
+
+        private async Task DisconnectMQTT()
+        {
+            _mqttClient.DisconnectedAsync -= MqttDisconnectedHandler;
+
+            try
+            {
+                await _mqttClient.DisconnectAsync().ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Disconnect error: " + ex);
+                return;
+            }
+
+            Console.WriteLine("MQTT disconnected");
+        }
+
+        private Task MqttDisconnectedHandler(MqttClientDisconnectedEventArgs e)
+        {
+            //var arguments = e;
+            Console.WriteLine("MQTT disconnected. Reconnecting...");
+
+            DisconnectMQTT();
+
+            reconnectTimer.Start();
+
+            return new Task(() => { });
+        }
+
+        private async void Timer_reconnect_Tick(object sender, EventArgs e)
+        {
+            reconnectTimer.Stop();
+            Console.WriteLine("Trying to reconnect...");
+            var result = await ConnectMQTT(true);
+
+            if (!result)
+                reconnectTimer.Start();
+        }
+
+        private async Task<bool> SubscribeMQTT(IEnumerable<string> topics)
+        {
+            try
+            {
+                foreach (var topic in topics)
+                {
+                    if (!string.IsNullOrEmpty(topic))
+                    {
+                        var result = await SubscribeMQTT(topic);
+
+                        if (result)
+                            Console.WriteLine($"Topic subscribed: {topic}");
+                        else
+                            Console.WriteLine($"Topic not subscribed: {topic}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error subscribing topic: {ex.Message}");
+                return false;
+            }
 
             return true;
         }
 
         private async Task<bool> SubscribeMQTT(string topic)
         {
-            if (_requestTopic.Length > 0)
+            if (!string.IsNullOrEmpty(topic))
             {
                 try
                 {
@@ -167,42 +236,16 @@ namespace MQTTOutPlugin
                 catch (Exception ex)
                 {
                     Console.WriteLine("MQTT topic subscribe exception: " + ex.Message);
+
                     return false;
                 }
             }
             else
+            {
                 return false;
+            }
 
             return true;
-        }
-
-        private async void DisconnectMQTT()
-        {
-            _mqttClient.DisconnectedAsync -= MqttDisconnectedHandler;
-
-            try
-            {
-                await _mqttClient.DisconnectAsync().ConfigureAwait(true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Disconnect error: " + ex);
-            }
-
-            Console.WriteLine("MQTT disconnected");
-        }
-
-        private Task MqttDisconnectedHandler(MqttClientDisconnectedEventArgs e)
-        {
-            var arguments = e;
-            reconnectTimer.Interval = _reconnectTimeOut;
-            reconnectTimer.Enabled = true;
-            reconnectTimer.Elapsed += Timer_reconnect_Tick;
-            Console.WriteLine("MQTT disconnected. Reconnecting...");
-
-            DisconnectMQTT();
-
-            return new Task(() => { });
         }
 
         private async Task<bool> SendToMQTT(string topic, string data)
@@ -211,6 +254,12 @@ namespace MQTTOutPlugin
             {
                 Console.WriteLine("...not connected. Reconnecting...");
                 var result = await ConnectMQTT(true);
+                if (!result)
+                {
+                    Console.WriteLine("MQTT not connected");
+
+                    return false;
+                }
             }
 
             var message = new MqttApplicationMessageBuilder()
@@ -225,16 +274,17 @@ namespace MQTTOutPlugin
             catch (Exception ex)
             {
                 Console.WriteLine("Write error: " + ex);
+
                 return false;
             }
 
             return true;
         }
 
-        private void Timer_reconnect_Tick(object sender, EventArgs e)
+        public void Dispose()
         {
-            Console.WriteLine("Trying to reconnect...");
-            ConnectMQTT(false);
+            _mqttClient?.Dispose();
+            reconnectTimer?.Dispose();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using MQTTnet;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Diagnostics;
 using MQTTnet.Implementations;
@@ -16,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace MQTTInPlugin
 {
-    public class MQTTInPlugin : PluginBase
+    public class MQTTInPlugin : PluginBase, IDisposable
     {
         private readonly MQTTInTopic[] MQTTInTopics;
         public string _requestServer = "";
@@ -54,8 +56,11 @@ namespace MQTTInPlugin
 
             MQTTInTopics = configBuilder.ConfigStorage.Topics;
 
-            _mqttClient.DisconnectedAsync += MqttDisconnectedHandler;
             _mqttClient.ApplicationMessageReceivedAsync += Mqtt_DataReceived;
+
+            reconnectTimer.Interval = _reconnectTimeOut;
+            reconnectTimer.Elapsed += Timer_reconnect_Tick;
+            reconnectTimer.AutoReset = true;
 
             ConnectMQTT(false);
 
@@ -90,21 +95,30 @@ namespace MQTTInPlugin
                 catch (Exception ex)
                 {
                     Console.WriteLine("MQTT connection exception: " + ex.Message);
-                    DisconnectMQTT();
+                    await DisconnectMQTT();
+
                     return;
                 }
 
                 if (!_mqttClient.IsConnected)
-                    DisconnectMQTT();
+                    await DisconnectMQTT();
             }).ConfigureAwait(waitConnection);
 
             if (!_mqttClient.IsConnected)
+            {
+                await DisconnectMQTT();
                 return false;
+            }
+
+            _mqttClient.DisconnectedAsync -= MqttDisconnectedHandler;
+            _mqttClient.DisconnectedAsync += MqttDisconnectedHandler;
+
+            await SubscribeMQTT(MQTTInTopics.Select(n => n.MQTTSubscribeTopic));
 
             return true;
         }
 
-        private async void DisconnectMQTT()
+        private async Task DisconnectMQTT()
         {
             _mqttClient.DisconnectedAsync -= MqttDisconnectedHandler;
 
@@ -115,6 +129,7 @@ namespace MQTTInPlugin
             catch (Exception ex)
             {
                 Console.WriteLine("Disconnect error: " + ex);
+                return;
             }
 
             Console.WriteLine("MQTT disconnected");
@@ -122,15 +137,77 @@ namespace MQTTInPlugin
 
         private Task MqttDisconnectedHandler(MqttClientDisconnectedEventArgs e)
         {
-            var arguments = e;
-            reconnectTimer.Interval = _reconnectTimeOut;
-            reconnectTimer.Enabled = true;
-            reconnectTimer.Elapsed += Timer_reconnect_Tick;
+            //var arguments = e;
             Console.WriteLine("MQTT disconnected. Reconnecting...");
 
             DisconnectMQTT();
 
+            reconnectTimer.Start();
+
             return new Task(() => { });
+        }
+
+        private async void Timer_reconnect_Tick(object sender, EventArgs e)
+        {
+            reconnectTimer.Stop();
+            Console.WriteLine("Trying to reconnect...");
+            var result = await ConnectMQTT(true);
+
+            if (!result)
+                reconnectTimer.Start();
+        }
+
+        private async Task<bool> SubscribeMQTT(IEnumerable<string> topics)
+        {
+            try
+            {
+                foreach (var topic in topics)
+                {
+                    if (!string.IsNullOrEmpty(topic))
+                    {
+                        var result = await SubscribeMQTT(topic);
+
+                        if (result)
+                            Console.WriteLine($"Topic subscribed: {topic}");
+                        else
+                            Console.WriteLine($"Topic not subscribed: {topic}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error subscribing topic: {ex.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> SubscribeMQTT(string topic)
+        {
+            if (!string.IsNullOrEmpty(topic))
+            {
+                try
+                {
+                    await _mqttClient
+                    .SubscribeAsync(new MqttTopicFilterBuilder()
+                    .WithTopic(_requestTopic)
+                    .Build())
+                    .ConfigureAwait(true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("MQTT topic subscribe exception: " + ex.Message);
+
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private Task Mqtt_DataReceived(MqttApplicationMessageReceivedEventArgs e)
@@ -158,91 +235,10 @@ namespace MQTTInPlugin
             return new Task(() => { });
         }
 
-        private async Task<bool> SendToMQTT(string topic, string data)
+        public void Dispose()
         {
-            if (!_mqttClient.IsConnected)
-            {
-                Console.WriteLine("...not connected. Reconnecting...");
-                var result = await ConnectMQTT(true);
-            }
-
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                .WithPayload(data)
-                .Build();
-
-            try
-            {
-                await _mqttClient.PublishAsync(message).ConfigureAwait(true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Write error: " + ex);
-                return false;
-            }
-
-            return true;
-        }
-
-        private async void Timer_reconnect_Tick(object sender, EventArgs e)
-        {
-            Console.WriteLine("Trying to reconnect...");
-            var result = await ConnectMQTT(true);
-            await SubscribeMQTT(MQTTInTopics.Select(n => n.MQTTSubscribeTopic));
-        }
-
-        private async Task<bool> SubscribeMQTT(IEnumerable<string> topics)
-        {
-            try
-            {
-                foreach (var topic in topics)
-                {
-                    if (!string.IsNullOrEmpty(topic))
-                    {
-                        await _mqttClient
-                            .SubscribeAsync(new MqttTopicFilterBuilder()
-                                .WithTopic(topic)
-                                .Build())
-                            .ConfigureAwait(false);
-
-                        Console.WriteLine($"Topic subscribed: ");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error subscribing topic: {ex.Message}");
-                return false;
-            }
-
-            return true;
-        }
-
-        private async Task<bool> SubscribeMQTT(string topic)
-        {
-            if (_requestTopic.Length > 0)
-            {
-                try
-                {
-                    await _mqttClient
-                    .SubscribeAsync(new MqttTopicFilterBuilder()
-                    .WithTopic(_requestTopic)
-                    .Build())
-                    .ConfigureAwait(true);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("MQTT topic subscribe exception: " + ex.Message);
-
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-            return true;
+            _mqttClient?.Dispose();
+            reconnectTimer?.Dispose();
         }
     }
 }
