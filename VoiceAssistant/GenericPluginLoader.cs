@@ -32,7 +32,7 @@ namespace VoiceAssistant
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error loading plugin {filePath}: {ex.Message}");
+                    Console.WriteLine($"Error loading plugin {filePath}: {ex}");
                 }
             }
 

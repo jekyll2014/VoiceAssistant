@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Version>1.0.2</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jekyll2014/VoiceAssistant</PackageProjectUrl>
     <Authors>Jekyll</Authors>
+    <StartupObject>VoiceAssistant.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

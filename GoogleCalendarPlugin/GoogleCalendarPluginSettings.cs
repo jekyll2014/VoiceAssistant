@@ -61,7 +61,8 @@ namespace GoogleCalendarPlugin
                 DaysStart = 0,
                 DaysCount = 1,
                 SingleEventMessage = "{StarTime} - {Summary}",
-                Response = "Расписание на сегодня: {1}"
+                Response = "Расписание на сегодня: {1}",
+                MaxEvents = 10
             },
             new GoogleCalendarPluginCommand
             {
@@ -91,7 +92,8 @@ namespace GoogleCalendarPlugin
                 DaysStart = 1,
                 DaysCount = 1,
                 SingleEventMessage = "{StarTime} - {Summary}",
-                Response = "Расписание на завтра: {1}"
+                Response = "Расписание на завтра: {1}",
+                MaxEvents = 10
             },
             new GoogleCalendarPluginCommand
             {
@@ -121,9 +123,10 @@ namespace GoogleCalendarPlugin
                 DaysStart = 0,
                 DaysCount = 1,
                 SingleEventMessage = "{Summary}",
-                Response = "Дни рождения сегодня: {1}"
+                Response = "Дни рождения сегодня: {1}",
+                MaxEvents = 10
             },
-                        new GoogleCalendarPluginCommand
+            new GoogleCalendarPluginCommand
             {
                 Name = "Tomorrow's birthdays",
                 Tokens = new[]
@@ -151,7 +154,8 @@ namespace GoogleCalendarPlugin
                 DaysStart = 0,
                 DaysCount = 1,
                 SingleEventMessage = "{Summary}",
-                Response = "Дни рождения завтра: {1}"
+                Response = "Дни рождения завтра: {1}",
+                MaxEvents = 10
             },
             new GoogleCalendarPluginCommand
             {
@@ -181,8 +185,9 @@ namespace GoogleCalendarPlugin
                 DaysStart = 0,
                 DaysCount = 7,
                 SingleEventMessage = "{StarDate} - {Summary}",
-                Response = "Приближающиеся дни рождения: {1}"
-            },
+                Response = "Приближающиеся дни рождения: {1}",
+                MaxEvents = 10
+            }
         };
 
         public string MoreResultsAvailableMessage = "и дальнейшие события, не вошедшие в список";

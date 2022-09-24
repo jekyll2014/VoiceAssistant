@@ -148,11 +148,11 @@ namespace GoogleCalendarPlugin
                     int lastNumber = number % 10;
                     result += number.ToString() + " ";
                     if (lastNumber == 1)
-                        result += oneMinute + " ";
+                        result += one + " ";
                     else if (lastNumber > 1 && lastNumber < 5)
-                        result += twoMinutes + " ";
+                        result += two + " ";
                     else if (lastNumber > 5)
-                        result += fiveMinutes + " ";
+                        result += five + " ";
                 }
 
                 return result;

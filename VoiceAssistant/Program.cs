@@ -24,13 +24,14 @@ Plugins list planned:
 6. Application control using key code injection (done)
 7. Openweathermap.org weather check for (done)
 8. Google calendar tasks check (done)
+9. Simple MQTT input adaptor (done)
+10. Simple MQTT output adaptor (done)
 
-9. Simple MQTT adaptor
-10. Search/Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
-11. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
-12. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
-13. Receive voice/text commands from Telegram
-13. Another currency exchange rate plugin (https://exchangerate.host/#/#docs)
+11. Receive voice/text commands from Telegram
+12. Search/Play music from folder by name/artist (foobar - https://www.foobar2000.org/components/view/foo_beefweb , https://hyperblast.org/beefweb/api/)
+13. Message broadcast/announce to selected/all instances in the network (websocket + mqtt)
+14. Voice connection (interphone/speakerphone) between instances (websocket + mqtt)
+15. Another currency exchange rate plugin (https://exchangerate.host/#/#docs)
 */
 
 using FuzzySharp;
