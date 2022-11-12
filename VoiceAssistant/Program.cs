@@ -58,15 +58,15 @@ namespace VoiceAssistant
     {
         private static readonly string _appConfigFile = "appsettings.json";
         private static VoiceAssistantSettings _appConfig;
-        private static GenericPluginLoader<PluginBase> pluginLoader = new GenericPluginLoader<PluginBase>();
-        private static List<PluginBase> _plugins = new List<PluginBase>();
-        private static List<ProcessingCommand> currentCommand = new List<ProcessingCommand>();
-        private static bool collectingIntent = false;
+        private static GenericPluginLoader<PluginBase> pluginLoader = new();
+        private static List<PluginBase> _plugins = new();
+        private static List<ProcessingCommand> currentCommandPool = new();
+        private static bool _waitingForKeyWord = true;
         private static AudioOutSingleton audioOut;
         private static float _savedVolume = 0;
         private static VoskRecognizer voiceRecognition;
         private static Timer commandAwaitTimer;
-        private static readonly object SyncRoot = new object();
+        private static readonly object SyncRoot = new();
 
         private static void Main(string[] args)
         {
@@ -97,7 +97,7 @@ namespace VoiceAssistant
 
             // print out assistant name
             Console.WriteLine($"{Environment.NewLine}Assistant names:");
-            Console.WriteLine($"  {_appConfig.CallSign.Aggregate((n, m) => { return n += $",{Environment.NewLine}  " + m; })}");
+            Console.WriteLine($"  {_appConfig.CallSign.Aggregate((n, m) => n += $",{Environment.NewLine}  " + m)}");
 
             Console.WriteLine();
 
@@ -155,7 +155,7 @@ namespace VoiceAssistant
             return $"Enter{Environment.NewLine}" +
                 $"\"help\" to get help on console commands{Environment.NewLine}" +
                 $"\"commands\" to get help on plugins commands{Environment.NewLine}" +
-                $"\"//[{_appConfig.CallSign.Aggregate((n, m) => { return n += ", " + m; })}] ******\" to start command manually";
+                $"\"//[{_appConfig.CallSign.Aggregate((n, m) => n += ", " + m)}] ******\" to start command manually";
         }
 
         private static VoiceAssistantSettings LoadConfig()
@@ -240,19 +240,15 @@ namespace VoiceAssistant
             Console.WriteLine($"{Environment.NewLine}Available voices:");
 
             var voiceSelected = false;
-            foreach (var voice in synthesizer.GetInstalledVoices())
+            foreach (var info in synthesizer.GetInstalledVoices().Select(n => n.VoiceInfo))
             {
-                var info = voice.VoiceInfo;
                 Console.WriteLine(
                     $"- Id: {info.Id} | Name: {info.Name} | Age: {info.Age} | Gender: {info.Gender} | Culture: {info.Culture} ");
 
-                if (!string.IsNullOrEmpty(_appConfig.VoiceName))
+                if (!string.IsNullOrEmpty(_appConfig.VoiceName) && info.Name == _appConfig.VoiceName)
                 {
-                    if (info.Name == _appConfig.VoiceName)
-                    {
-                        synthesizer.SelectVoice(_appConfig.VoiceName);
-                        voiceSelected = true;
-                    }
+                    synthesizer.SelectVoice(_appConfig.VoiceName);
+                    voiceSelected = true;
                 }
 
                 if (!voiceSelected
@@ -267,7 +263,7 @@ namespace VoiceAssistant
             Console.WriteLine($"Selected voice: {synthesizer.Voice.Name}");
 
             //create audio output interface singleton
-            var audioOut = AudioOutSingleton.GetInstance(_appConfig.SpeakerCulture, synthesizer, builder, waveOut,
+            audioOut = AudioOutSingleton.GetInstance(_appConfig.SpeakerCulture, synthesizer, builder, waveOut,
                 _appConfig.AudioOutSampleRate);
 
             return audioOut;
@@ -375,7 +371,7 @@ namespace VoiceAssistant
 
         private static Timer InitCommandAwaitTimer()
         {
-            var commandAwaitTimer = new Timer
+            commandAwaitTimer = new Timer
             {
                 AutoReset = false,
                 Interval = _appConfig.CommandAwaitTime * 1000
@@ -389,6 +385,7 @@ namespace VoiceAssistant
             lock (SyncRoot)
             {
                 VoskResult newWords;
+                Task pluginBufferFill = null;
                 // simulated words from external source
                 if (s is VoskResult simulatedInput)
                 {
@@ -397,25 +394,30 @@ namespace VoiceAssistant
                 // naturally spoken words
                 else if (waveEventArgs != null)
                 {
-                    var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
-
                     // copy audio data to plugin's buffer if allowed and if any plugin wants
                     if (_appConfig.AllowPluginsToListenToSound)
                     {
-                        var recordingPlugins = _plugins.Where(n => n.CanAcceptSound);
-
-                        if (recordingPlugins.Any())
+                        pluginBufferFill = Task.Run(() =>
                         {
-                            var len = waveEventArgs.BytesRecorded;
-                            byte[] dataCopy = new byte[len];
-                            Array.Copy(waveEventArgs.Buffer, dataCopy, len);
+                            var recordingPlugins = _plugins.Where(n => n.CanAcceptSound);
 
-                            foreach (var plugin in recordingPlugins)
+                            if (recordingPlugins.Any())
                             {
-                                plugin.AddSound(dataCopy, _appConfig.AudioInSampleRate, 16, 1);
+                                var len = waveEventArgs.BytesRecorded;
+                                byte[] dataCopy = new byte[len];
+                                Array.Copy(waveEventArgs.Buffer, dataCopy, len);
+
+                                foreach (var plugin in recordingPlugins)
+                                {
+                                    plugin.AddSound(dataCopy, _appConfig.AudioInSampleRate, 16, 1);
+                                }
                             }
-                        }
+                        });
                     }
+
+                    var recognitionResult = voiceRecognition.AcceptWaveform(waveEventArgs.Buffer, waveEventArgs.BytesRecorded);
+
+                    pluginBufferFill?.Wait();
 
                     if (!recognitionResult)
                     {
@@ -438,21 +440,27 @@ namespace VoiceAssistant
                 Console.WriteLine($"Recognized words: {newWords.text}");
 
                 // copy recognized words to plugin's buffer if allowed anf if any plugin wants
+                pluginBufferFill = null;
                 if (_appConfig.AllowPluginsToListenToWords)
                 {
-                    var recordingPlugins = _plugins.Where(n => n.CanAcceptWords);
-
-                    if (recordingPlugins.Any())
+                    pluginBufferFill = Task.Run(() =>
                     {
-                        foreach (var plugin in recordingPlugins)
+
+                        var recordingPlugins = _plugins.Where(n => n.CanAcceptWords);
+
+                        if (recordingPlugins.Any())
                         {
-                            plugin.AddWords(newWords.text);
+                            foreach (var plugin in recordingPlugins)
+                            {
+                                plugin.AddWords(newWords.text);
+                            }
                         }
-                    }
+                    });
                 }
 
                 // process new words
                 ProcessNewWords(newWords.result);
+                pluginBufferFill?.Wait();
             }
         }
 
@@ -468,17 +476,18 @@ namespace VoiceAssistant
                 word.word = word.word.ToLower();
 
                 // looking for an assistant name (keyword)
-                if (!collectingIntent)
+                if (_waitingForKeyWord)
                 {
                     var recognize = FuzzyEqual(_appConfig.CallSign, word.word, _appConfig.DefaultSuccessRate);
 
                     if (recognize)
                     {
+                        // turn the music down to make recording clearer
                         _savedVolume = GetMasterVolume();
                         SetMasterVolume(0.1f);
 
                         // add all plugins command to command pool (to exclude unmatched later)
-                        currentCommand.Clear();
+                        currentCommandPool.Clear();
 
                         foreach (var plugin in _plugins)
                         {
@@ -492,7 +501,7 @@ namespace VoiceAssistant
                                         ExpectedCommand = command
                                     };
 
-                                    currentCommand.Add(newCmdItem);
+                                    currentCommandPool.Add(newCmdItem);
                                 }
                             }
                         }
@@ -500,7 +509,7 @@ namespace VoiceAssistant
                         //run timer to wait for the command phrase (stop waiting if no command received)
                         commandAwaitTimer.Interval = _appConfig.CommandAwaitTime * 1000;
                         commandAwaitTimer.Start();
-                        collectingIntent = true;
+                        _waitingForKeyWord = false;
                     }
                 }
                 // add new words to a command phrase
@@ -509,32 +518,38 @@ namespace VoiceAssistant
                     //stop timer in any case and restart later if phrase is not completed
                     commandAwaitTimer.Stop();
 
-                    // check word to comply with any command in command pool
-                    ProcessNextToken(word.word, ref currentCommand);
+                    // check word to comply with any command in command pool and remove commands from pool if not comply
+                    ProcessToken(word.word, ref currentCommandPool);
 
                     // no commands left similar to the input phrase
-                    if (currentCommand.Count < 1)
+                    if (currentCommandPool.Count < 1)
                     {
-                        collectingIntent = false;
+                        _waitingForKeyWord = true;
+
+                        //restore speaker volume back to normal level
                         SetMasterVolume(_savedVolume);
+
                         audioOut.Speak(_appConfig.CommandNotRecognizedMessage);
                         Console.WriteLine(_appConfig.CommandNotRecognizedMessage);
-                        currentCommand.Clear();
+                        currentCommandPool.Clear();
                     }
                     // the only command found
-                    else if (currentCommand.Count == 1)
+                    else if (currentCommandPool.Count == 1)
                     {
-                        var command = currentCommand.FirstOrDefault();
+                        var command = currentCommandPool.FirstOrDefault();
 
                         // if a command is of the same length and the last token is not of Parameter type
                         // Parameter could be appended with new words within word-to-word timer
-                        if (command.CommandTokens.Count == command.ExpectedCommand.Tokens.Count()
+                        if (command.CommandTokens.Count == command.ExpectedCommand.Tokens.Length
                             && command.CommandTokens.LastOrDefault().Type != TokenType.Parameter)
                         {
-                            collectingIntent = false;
+                            _waitingForKeyWord = true;
+
+                            //restore speaker volume to output the result
                             SetMasterVolume(_savedVolume);
+
                             ExecuteCommand(command);
-                            currentCommand.Clear();
+                            currentCommandPool.Clear();
                         }
                     }
                     // still there are multiple commands possible
@@ -551,14 +566,14 @@ namespace VoiceAssistant
         {
             lock (SyncRoot)
             {
-                collectingIntent = false;
+                _waitingForKeyWord = true;
                 SetMasterVolume(_savedVolume);
 
-                // filter out incomplete commands
-                var possibleCommands = currentCommand
-                    .Where(n => n.CommandTokens.Count == n.ExpectedCommand.Tokens.Count()).ToArray();
+                // filter complete commands
+                var possibleCommands = currentCommandPool
+                    .Where(n => n.CommandTokens.Count == n.ExpectedCommand.Tokens.Length).ToArray();
 
-                if (possibleCommands.Count() < 1)
+                if (possibleCommands.Length < 1)
                 {
                     audioOut.PlayFile(_appConfig.MisrecognitionSound);
                     Console.WriteLine(_appConfig.CommandNotFoundMessage);
@@ -566,7 +581,7 @@ namespace VoiceAssistant
                 else
                 {
                     // multiple commands found
-                    if (possibleCommands.Count() > 1)
+                    if (possibleCommands.Length > 1)
                     {
                         Console.WriteLine("Multiple similar command found. Check command definitions:");
 
@@ -584,7 +599,7 @@ namespace VoiceAssistant
                     }
                 }
 
-                currentCommand.Clear();
+                currentCommandPool.Clear();
             }
         }
 
@@ -600,7 +615,7 @@ namespace VoiceAssistant
                 Console.WriteLine("Executing command:");
                 Console.WriteLine(command.ToString());
 
-                var task = Task.Run(() =>
+                Task.Run(() =>
                 {
                     var commandName = command.ExpectedCommand.Name;
                     var commandTokens = command.CommandTokens;
@@ -611,7 +626,7 @@ namespace VoiceAssistant
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to execute plugin command: {command.ToString()}");
+                        Console.WriteLine($"Failed to execute plugin command: {command}");
                         Console.WriteLine($"Exception details: {ex.Message}");
                     }
                 }).ConfigureAwait(true);
@@ -648,7 +663,7 @@ namespace VoiceAssistant
             return false;
         }
 
-        private static void ProcessNextToken(string newTokenString, ref List<ProcessingCommand> collectedCommands)
+        private static void ProcessToken(string newTokenString, ref List<ProcessingCommand> collectedCommands)
         {
             for (var i = 0; i < collectedCommands.Count; i++)
             {
@@ -754,7 +769,7 @@ namespace VoiceAssistant
         {
             //convert sampling rate to comply STT settings
             var resampledBuffer = WavChangeFrequency(buffer, samplingRate, bits, channels, _appConfig.AudioInSampleRate, 1);
-            WaveInEventArgs waveEventArgs = new WaveInEventArgs(resampledBuffer, resampledBuffer.Length);
+            WaveInEventArgs waveEventArgs = new(resampledBuffer, resampledBuffer.Length);
 
             lock (SyncRoot)
             {
@@ -764,16 +779,14 @@ namespace VoiceAssistant
 
         private static void SetMasterVolume(float level)
         {
-            MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
+            MMDeviceEnumerator devEnum = new();
             MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            //string currVolume = "MasterPeakVolume : " + defaultDevice.AudioMeterInformation.MasterPeakValue.ToString();
-            var range = defaultDevice.AudioEndpointVolume.VolumeRange;
             defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = level;
         }
 
         private static float GetMasterVolume()
         {
-            MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
+            MMDeviceEnumerator devEnum = new();
             MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
 
             return defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
@@ -781,13 +794,13 @@ namespace VoiceAssistant
 
         internal static byte[] WavChangeFrequency(byte[] rawPcmData, int frequency, int bits, int channels, int newFrequency, int newChannels)
         {
-            using (MemoryStream AudioSample = new MemoryStream(rawPcmData))
+            using (MemoryStream AudioSample = new(rawPcmData))
             {
-                RawSourceWaveStream originalWave = new RawSourceWaveStream(AudioSample, new WaveFormat(frequency, bits, channels));
+                RawSourceWaveStream originalWave = new(AudioSample, new WaveFormat(frequency, bits, channels));
                 var outputWaveFormat = new WaveFormat(newFrequency, newChannels);
-                using (MediaFoundationResampler conversionStream = new MediaFoundationResampler(originalWave, outputWaveFormat))
+                using (MediaFoundationResampler conversionStream = new(originalWave, outputWaveFormat))
                 {
-                    using (MemoryStream wavData = new MemoryStream())
+                    using (MemoryStream wavData = new())
                     {
                         byte[] readBuffer = new byte[1024];
                         var l = conversionStream.Read(readBuffer, 0, readBuffer.Length);
@@ -802,6 +815,5 @@ namespace VoiceAssistant
                 }
             }
         }
-
     }
 }

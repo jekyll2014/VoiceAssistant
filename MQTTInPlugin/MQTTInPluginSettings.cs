@@ -10,9 +10,8 @@ namespace MQTTInPlugin
         public int RequestServerPort = 1883;
         public string RequestServerLogin = "";
         public string RequestServerPassword = "";
-        public string ClientID = "";
+        public string ClientID = "MQTTInPlugin";
         public bool AddTimeStampToClientID = true;
-        public string RequestDeliveryMode = "";
         public bool KeepConnectionAlive = true;
         public int ReconnectTimeOut = 60;
 

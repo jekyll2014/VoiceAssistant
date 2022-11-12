@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace OpenWeatherPlugin
 {
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class WeatherCurrent
     {
         public Coord coord { get; set; }

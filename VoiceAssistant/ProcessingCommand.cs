@@ -1,6 +1,7 @@
 ﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using PluginInterface;
@@ -11,7 +12,7 @@ namespace VoiceAssistant
     {
         public string PluginName;
         public PluginCommand ExpectedCommand;
-        public List<Token> CommandTokens = new List<Token>();
+        public List<Token> CommandTokens = new();
 
         public override string ToString()
         {
@@ -30,23 +31,23 @@ namespace VoiceAssistant
 
             if (CommandTokens != null && CommandTokens.Count > 0)
             {
-                foreach (var token in CommandTokens)
+                foreach (var token in CommandTokens.Select(n => n.Value))
                 {
                     if (sb.Length > 0)
                     {
-                        sb.Append(" ");
+                        sb.Append(' ');
                     }
 
-                    if (token.Value.Length == 1)
+                    if (token.Length == 1)
                     {
-                        sb.Append($"{token.Value[0]}");
+                        sb.Append($"{token[0]}");
                     }
                     else
                     {
-                        sb.Append("[");
+                        sb.Append('[');
                         var nextElement = false;
 
-                        foreach (var word in token.Value)
+                        foreach (var word in token)
                         {
                             if (nextElement)
                             {
@@ -57,13 +58,12 @@ namespace VoiceAssistant
                             nextElement = true;
                         }
 
-                        sb.Append("]");
+                        sb.Append(']');
                     }
                 }
             }
 
             return sb.ToString();
         }
-
     }
 }

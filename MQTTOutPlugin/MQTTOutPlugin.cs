@@ -20,18 +20,15 @@ namespace MQTTOutPlugin
     public class MQTTOutPlugin : PluginBase, IDisposable
     {
         private readonly MQTTOutPluginCommand[] MQTTOutCommands;
-        public string _requestServer = "";
-        public int _requestServerPort = 1883;
-        public string _requestServerLogin = "";
-        public string _requestServerPassword = "";
-        public string _clientID = "MQTTOutPlugin";
-        public bool _addTimeStampToClientID = true;
-        public string _requestDeliveryMode = "";
-        public string _requestTopic = "";
-        public int _reconnectTimeOut = 60000;
+        private readonly string _requestServer;
+        private readonly int _requestServerPort;
+        private readonly string _requestServerLogin;
+        private readonly string _requestServerPassword;
+        private readonly string _clientID;
+        private readonly bool _addTimeStampToClientID;
 
-        public string _failedConnectionResponse = "";
-
+        private readonly string _failedConnectionResponse;
+        private bool disposedValue;
         private static readonly IMqttNetLogger Logger = new MqttNetEventLogger();
         private readonly IMqttClient _mqttClient = new MqttClient(new MqttClientAdapterFactory(), Logger);
         private readonly System.Timers.Timer reconnectTimer = new System.Timers.Timer();
@@ -50,9 +47,7 @@ namespace MQTTOutPlugin
             _requestServerPassword = configBuilder.ConfigStorage.RequestServerPassword;
             _clientID = configBuilder.ConfigStorage.ClientID;
             _addTimeStampToClientID = configBuilder.ConfigStorage.AddTimeStampToClientID;
-            _requestDeliveryMode = configBuilder.ConfigStorage.RequestDeliveryMode;
             _failedConnectionResponse = configBuilder.ConfigStorage.FailedConnectionResponse;
-            _reconnectTimeOut = configBuilder.ConfigStorage.ReconnectTimeOut * 1000;
 
             MQTTOutCommands = configBuilder.ConfigStorage.Commands;
 
@@ -61,7 +56,8 @@ namespace MQTTOutPlugin
                 _commands = newCmds;
             }
 
-            reconnectTimer.Interval = _reconnectTimeOut;
+            var reconnectTimeOut = configBuilder.ConfigStorage.ReconnectTimeOut * 1000;
+            reconnectTimer.Interval = reconnectTimeOut;
             reconnectTimer.Elapsed += Timer_reconnect_Tick;
             reconnectTimer.AutoReset = true;
 
@@ -229,7 +225,7 @@ namespace MQTTOutPlugin
                 {
                     await _mqttClient
                     .SubscribeAsync(new MqttTopicFilterBuilder()
-                    .WithTopic(_requestTopic)
+                    .WithTopic(topic)
                     .Build())
                     .ConfigureAwait(true);
                 }
@@ -281,10 +277,25 @@ namespace MQTTOutPlugin
             return true;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _mqttClient?.Dispose();
+                    reconnectTimer?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
         public void Dispose()
         {
-            _mqttClient?.Dispose();
-            reconnectTimer?.Dispose();
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

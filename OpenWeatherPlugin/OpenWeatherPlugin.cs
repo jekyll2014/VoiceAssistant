@@ -15,11 +15,11 @@ namespace OpenWeatherPlugin
 {
     public partial class OpenWeatherPlugin : PluginBase
     {
-        private readonly string ApiKey = "";
+        private readonly string ApiKey;
         private readonly string NoDataPhrase = "";
 
         private readonly OpenWeatherPluginCommand[] CurrencyRateCommands;
-        public List<(string Name, int MaxDegree)> WindDirections;
+        private readonly List<(string Name, int MaxDegree)> WindDirections;
 
         private readonly string OpenWeatherNowUrl;
         private readonly string OpenWeatherForecastUrl;
@@ -93,7 +93,7 @@ namespace OpenWeatherPlugin
                 }
                 else
                 {
-                    var windDir = GetWindDirectionName(currentWeather.WindDirection);
+                    //var windDir = GetWindDirectionName(currentWeather.WindDirection);
                     message = PluginTools.FormatStringWithClassFields(command.Response, currentWeather);
                 }
             }
@@ -185,7 +185,7 @@ namespace OpenWeatherPlugin
                 result.Humidity = data.main?.humidity ?? -1;
                 result.Pressure = data.main?.pressure ?? -1;
                 result.RecordDateTime = UnixTimeStampToDateTime(data.dt);
-                result.Temperature = (int)data.main?.temp;
+                result.Temperature = (int)(data.main?.temp ?? 0);
                 result.WeatherDescription = data.weather?.FirstOrDefault()?.description ?? "";
                 result.WindDirection = data.wind?.deg ?? -1;
                 result.WindDirectionName = result.WindDirection == -1 ? "" : GetWindDirectionName(result.WindDirection);
@@ -225,7 +225,7 @@ namespace OpenWeatherPlugin
 
             if (string.IsNullOrEmpty(jsonText))
             {
-                return null;
+                return default;
             }
 
             // распарсить
@@ -287,31 +287,32 @@ namespace OpenWeatherPlugin
             if (data == null || !data.Any())
                 return null;
 
-            WeatherForecastData result = new WeatherForecastData();
+            WeatherForecastData result = new WeatherForecastData
+            {
+                RecordDateTime = UnixTimeStampToDateTime(data.FirstOrDefault()?.dt ?? default),
 
-            result.RecordDateTime = UnixTimeStampToDateTime(data.FirstOrDefault()?.dt ?? default);
+                Clouds = (int)(data.Average(n => n.clouds?.all ?? -1)),
+                MinClouds = data.Min(n => n.clouds?.all ?? -1),
+                MaxClouds = data.Max(n => n.clouds?.all ?? -1),
 
-            result.Clouds = (int)(data.Average(n => n.clouds?.all ?? -1));
-            result.MinClouds = data.Min(n => n.clouds?.all ?? -1);
-            result.MaxClouds = data.Max(n => n.clouds?.all ?? -1);
+                Humidity = (int)data.Average(n => n.main?.humidity ?? -1),
+                MinHumidity = data.Min(n => n.main?.humidity ?? -1),
+                MaxHumidity = data.Max(n => n.main?.humidity ?? -1),
 
-            result.Humidity = (int)data.Average(n => n.main?.humidity ?? -1);
-            result.MinHumidity = data.Min(n => n.main?.humidity ?? -1);
-            result.MaxHumidity = data.Max(n => n.main?.humidity ?? -1);
+                Pressure = (int)data.Average(n => n.main?.pressure ?? -1),
+                MinPressure = data.Min(n => n.main?.pressure ?? -1),
+                MaxPressure = data.Max(n => n.main?.pressure ?? -1),
 
-            result.Pressure = (int)data.Average(n => n.main?.pressure ?? -1);
-            result.MinPressure = data.Min(n => n.main?.pressure ?? -1);
-            result.MaxPressure = data.Max(n => n.main?.pressure ?? -1);
+                Temperature = (int)data.Average(n => n.main?.temp ?? -100),
+                MinTemperature = (int)data.Min(n => n.main?.temp ?? -100),
+                MaxTemperature = (int)data.Max(n => n.main?.temp ?? -100),
 
-            result.Temperature = (int)data.Average(n => n.main?.temp ?? -100);
-            result.MinTemperature = (int)data.Min(n => n.main?.temp ?? -100);
-            result.MaxTemperature = (int)data.Max(n => n.main?.temp ?? -100);
+                WeatherDescription = data.FirstOrDefault()?.weather.FirstOrDefault()?.description,
 
-            result.WeatherDescription = data.FirstOrDefault()?.weather.FirstOrDefault()?.description;
-
-            result.WindDirection = (int)data.Average(n => n.wind?.deg ?? -1);
-            result.MinWindDirection = data.Min(n => n.wind?.deg ?? -1);
-            result.MaxWindDirection = data.Max(n => n.wind?.deg ?? -1);
+                WindDirection = (int)data.Average(n => n.wind?.deg ?? -1),
+                MinWindDirection = data.Min(n => n.wind?.deg ?? -1),
+                MaxWindDirection = data.Max(n => n.wind?.deg ?? -1)
+            };
 
             result.WindDirectionName = result.WindDirection == -1 ? "" : GetWindDirectionName(result.WindDirection);
             result.MinWindDirectionName = result.MinWindDirection == -1 ? "" : GetWindDirectionName(result.MinWindDirection);

@@ -37,15 +37,11 @@ namespace PluginInterface
                 try
                 {
                     propertyValue = sourceClass.GetType()?.GetField(propertyName)?.GetValue(sourceClass);
-
-                    if (propertyValue == null)
-                    {
-                        propertyValue = sourceClass.GetType()?.GetProperty(propertyName)?.GetValue(sourceClass);
-                    }
+                    propertyValue ??= sourceClass.GetType()?.GetProperty(propertyName)?.GetValue(sourceClass);
                 }
                 catch
                 {
-
+                    //no property or field found for the name
                 }
 
                 if (propertyValue != null)

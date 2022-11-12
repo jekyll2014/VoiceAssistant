@@ -131,17 +131,17 @@ namespace PluginInterface
         /// </summary>
         /// <param name="val">Число</param>
         /// <returns>Возвращает строковую запись числа</returns>
-        public string ConvertNumberToString(long var)
+        public string ConvertNumberToString(long val)
         {
             var minus = false;
 
-            if (var < 0)
+            if (val < 0)
             {
-                var = -var;
+                val = -val;
                 minus = true;
             }
 
-            var n = var;
+            var n = val;
 
             var r = new StringBuilder();
 

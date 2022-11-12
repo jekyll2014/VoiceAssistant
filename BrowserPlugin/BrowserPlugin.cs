@@ -116,7 +116,7 @@ namespace BrowserPlugin
 
         private Process OpenUrl(string url, bool standAloneBrowser = false)
         {
-            Process proc = null;
+            Process proc;
             try
             {
                 if (standAloneBrowser)

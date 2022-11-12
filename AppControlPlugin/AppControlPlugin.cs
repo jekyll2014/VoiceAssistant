@@ -195,9 +195,8 @@ namespace AppControlPlugin
 
         private const uint WM_KEYDOWN = 0x0100;
         private readonly AppControlPluginCommand[] HelloCommands;
-        public string KeyNotFound;
-        public string ProcessNotFound;
-        private volatile string _message = "";
+        private readonly string KeyNotFound;
+        private readonly string ProcessNotFound;
 
         public AppControlPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
@@ -227,16 +226,16 @@ namespace AppControlPlugin
                 return;
             }
 
-            _message = "";
-            Task.Run(() => { _message = SendKey(command.ApplicationId, command.KeyNames); }).Wait();
+            var message = "";
+            Task.Run(() => { message = SendKey(command.ApplicationId, command.KeyNames); }).Wait();
 
 
-            if (string.IsNullOrEmpty(_message))
+            if (string.IsNullOrEmpty(message))
             {
-                _message = command.Response;
+                message = command.Response;
             }
 
-            AudioOut.Speak(_message);
+            AudioOut.Speak(message);
         }
 
         [DllImport("user32.dll", EntryPoint = "PostMessageA", SetLastError = true)]

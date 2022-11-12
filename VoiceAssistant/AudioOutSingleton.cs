@@ -15,7 +15,7 @@ namespace VoiceAssistant
     public class AudioOutSingleton : IAudioOutSingleton
     {
         private static AudioOutSingleton _instance;
-        private static readonly object SyncRoot = new object();
+        private static readonly object SyncRoot = new();
         private readonly SpeechSynthesizer _synthesizer;
         private readonly PromptBuilder _promptBuilder;
         private readonly WaveOut _waveOut;

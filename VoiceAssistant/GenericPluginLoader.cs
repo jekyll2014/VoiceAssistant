@@ -13,7 +13,7 @@ namespace VoiceAssistant
 {
     public class GenericPluginLoader<T> where T : PluginBase
     {
-        private readonly List<GenericAssemblyLoadContext<T>> _loadContexts = new List<GenericAssemblyLoadContext<T>>();
+        private readonly List<GenericAssemblyLoadContext<T>> _loadContexts = new();
 
         public List<T> LoadAll(string pluginPath, string filter, params object[] constructorArgs)
         {
@@ -76,7 +76,7 @@ namespace VoiceAssistant
             _resolver = new AssemblyDependencyResolver(pluginPath);
         }
 
-        private HashSet<string> GetReferencedAssemblyFullNames(string referencedBy)
+        private static HashSet<string> GetReferencedAssemblyFullNames(string referencedBy)
         {
             return AppDomain.CurrentDomain
                 .GetAssemblies()

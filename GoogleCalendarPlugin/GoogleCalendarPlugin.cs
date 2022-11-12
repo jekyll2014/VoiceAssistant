@@ -33,9 +33,9 @@ namespace GoogleCalendarPlugin
         private static readonly string twoMinutes = "минуты";
         private static readonly string fiveMinutes = "минут";
 
-        private readonly string moreResultsAvailableMessage = "";
-        private readonly string noEventsMessage = "";
-        private readonly string NoDataMessage = "";
+        private readonly string moreResultsAvailableMessage;
+        private readonly string noEventsMessage;
+        private readonly string NoDataMessage;
 
         public GoogleCalendarPlugin(IAudioOutSingleton audioOut, string currentCulture, string pluginPath) : base(audioOut, currentCulture, pluginPath)
         {
@@ -66,21 +66,21 @@ namespace GoogleCalendarPlugin
 
             var events = GetEvents(GoogleApiCredentials, command.CalendarId, command.DaysStart, command.DaysCount, command.MaxEvents, out var moreEvents);
 
-            if (events == null)
+            if (events.Length <= 0)
             {
                 AudioOut.Speak(NoDataMessage);
                 return;
             }
 
-            var eventsMessage = "";
+            var eventsMessage = new StringBuilder();
             foreach (var eventItem in events)
             {
-                eventsMessage += PluginTools.FormatStringWithClassFields(command.SingleEventMessage, eventItem);
+                eventsMessage.Append(PluginTools.FormatStringWithClassFields(command.SingleEventMessage, eventItem));
             }
 
-            if (string.IsNullOrEmpty(eventsMessage))
+            if (eventsMessage.Length <= 0)
             {
-                eventsMessage = noEventsMessage;
+                eventsMessage.Append(noEventsMessage);
             }
 
             var message = string.Format(command.Response, null, eventsMessage);
@@ -170,7 +170,8 @@ namespace GoogleCalendarPlugin
             {
                 Console.WriteLine($"Can't get GoogleCalendar data: {ex.Message}");
             }
-            return null;
+
+            return default;
         }
     }
 }

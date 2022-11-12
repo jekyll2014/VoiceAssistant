@@ -26,23 +26,23 @@ namespace PluginInterface
 
             if (Tokens != null && Tokens.Length > 0)
             {
-                foreach (var token in Tokens)
+                foreach (var token in Tokens.Select(n => n.Value))
                 {
                     if (sb.Length > 0)
                     {
                         sb.Append(" ");
                     }
 
-                    if (token.Value.Length == 1)
+                    if (token.Length == 1)
                     {
-                        sb.Append($"{token.Value[0]}");
+                        sb.Append($"{token[0]}");
                     }
                     else
                     {
                         sb.Append("[");
                         var nextElement = false;
 
-                        foreach (var word in token.Value)
+                        foreach (var word in token)
                         {
                             if (nextElement)
                             {
@@ -66,7 +66,7 @@ namespace PluginInterface
     {
         public string[] Value;
         public TokenType Type = TokenType.Unknown;
-        public int SuccessRate = 100; // success rato for fuzzy compare
+        public int SuccessRate = 100; // success ratio for fuzzy compare
     }
 
     public enum TokenType
