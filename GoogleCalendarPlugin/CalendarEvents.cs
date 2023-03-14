@@ -73,7 +73,7 @@ namespace GoogleCalendarPlugin
                         if (Start != null && End != null)
                         {
                             var diff = ((DateTime)End).Subtract((DateTime)Start);
-                            _lengthHour = diff.Hours;
+                            _lengthHour = (int)diff.TotalHours;
                         }
                         else
                         {
@@ -95,7 +95,7 @@ namespace GoogleCalendarPlugin
                         if (Start != null && End != null)
                         {
                             var diff = ((DateTime)End).Subtract((DateTime)Start);
-                            _lengthMinute = diff.Minutes;
+                            _lengthMinute = (int)diff.TotalMinutes;
                         }
                         else
                         {

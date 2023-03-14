@@ -66,7 +66,7 @@ namespace GoogleCalendarPlugin
 
             var events = GetEvents(GoogleApiCredentials, command.CalendarId, command.DaysStart, command.DaysCount, command.MaxEvents, out var moreEvents);
 
-            if (events.Length <= 0)
+            if (events?.Length <= 0)
             {
                 AudioOut.Speak(NoDataMessage);
                 return;
@@ -96,6 +96,7 @@ namespace GoogleCalendarPlugin
         {
             moreEvents = false;
             UserCredential credential;
+            var result = new List<CalendarEvents>();
 
             try
             {
@@ -152,7 +153,6 @@ namespace GoogleCalendarPlugin
 
                 // List events
                 Events events = request.Execute();
-                var result = new List<CalendarEvents>();
                 if (events.Items != null)
                 {
                     foreach (var eventItem in events.Items)
@@ -164,14 +164,13 @@ namespace GoogleCalendarPlugin
                 // do we have more events pages? No use to list too many events at once
                 moreEvents = !string.IsNullOrEmpty(events.NextPageToken);
 
-                return result.ToArray();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Can't get GoogleCalendar data: {ex.Message}");
             }
 
-            return default;
+            return result.ToArray();
         }
     }
 }

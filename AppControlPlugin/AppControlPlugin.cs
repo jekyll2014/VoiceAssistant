@@ -227,7 +227,10 @@ namespace AppControlPlugin
             }
 
             var message = "";
-            Task.Run(() => { message = SendKey(command.ApplicationId, command.KeyNames); }).Wait();
+            Task.Run(async () =>
+            {
+                message = await SendKey(command.ApplicationId, command.KeyNames);
+            }).Wait();
 
 
             if (string.IsNullOrEmpty(message))
@@ -241,7 +244,7 @@ namespace AppControlPlugin
         [DllImport("user32.dll", EntryPoint = "PostMessageA", SetLastError = true)]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
 
-        private string SendKey(string processId, string[] keyNames)
+        private async Task<string> SendKey(string processId, string[] keyNames)
         {
             Process[] mpc = Process.GetProcessesByName(processId);
 
@@ -249,14 +252,14 @@ namespace AppControlPlugin
             {
                 foreach (var keyName in keyNames)
                 {
-                    var r = keyList.TryGetValue(keyName, out var keyCode);
-                    if (!r)
+                    var result = keyList.TryGetValue(keyName, out var keyCode);
+                    if (!result)
                     {
                         return KeyNotFound;
                     }
 
                     PostMessage(mpc[0].MainWindowHandle, WM_KEYDOWN, keyCode, 0);
-                    Task.Delay(50);
+                    await Task.Delay(50);
                 }
 
                 return string.Empty;
