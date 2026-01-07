@@ -1,0 +1,369 @@
+{
+  "ConfigurationNote": [
+    "Available parameters:",
+    "%minutes% - minutes",
+    "%seconds% - seconds",
+    "Interpolation macros:",
+    "{1} - number of minutes",
+    "{2} - number of seconds"
+  ],
+  "AlarmSound": "timer.wav",
+  "IncorrectTime": "Некорректное время",
+  "TimerNotFound": "Таймер не найден",
+  "Commands": [
+    {
+      "Response": "Таймер заведен на {1} минут",
+      "isStopCommand": false,
+      "Name": "Run timer minutes",
+      "Tokens": [
+        {
+          "Value": [
+            "Поставь",
+            "Заведи",
+            "Запусти"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймер"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "минут",
+            "минуты",
+            "минуту"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймер на {1} минут остановлен",
+      "isStopCommand": true,
+      "Name": "Stop timer minutes",
+      "Tokens": [
+        {
+          "Value": [
+            "Останови",
+            "Удали"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймер"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "минут",
+            "минуты",
+            "минуту"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймер заведен на {2} секунд",
+      "isStopCommand": false,
+      "Name": "Run timer seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "Поставь",
+            "Заведи",
+            "Запусти"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймер"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "секунд",
+            "секунды",
+            "секунду"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймер на {2} секунд остановлен",
+      "isStopCommand": true,
+      "Name": "Stop timer seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "Останови",
+            "Удали"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймер"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "секунд",
+            "секунды",
+            "секунду"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймер заведен на {1} минут {2} секунд",
+      "isStopCommand": false,
+      "Name": "Run timer minutes, seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "Поставь",
+            "Заведи",
+            "Запусти"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймер"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "минут",
+            "минуты",
+            "минуту"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "секунд",
+            "секунды",
+            "секунду"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймер на {1} минут {2} секунд остановлен",
+      "isStopCommand": true,
+      "Name": "Stop timer minutes, seconds",
+      "Tokens": [
+        {
+          "Value": [
+            "Останови",
+            "Удали"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймер"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%minutes%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "минут",
+            "минуты",
+            "минуту"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "%seconds%"
+          ],
+          "Type": "Parameter",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "секунд",
+            "секунды",
+            "секунду"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Таймеры остановлены",
+      "isStopCommand": true,
+      "Name": "Stop timers",
+      "Tokens": [
+        {
+          "Value": [
+            "Останови"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймеры"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Все таймеры остановлены",
+      "isStopCommand": true,
+      "Name": "Stop all timers",
+      "Tokens": [
+        {
+          "Value": [
+            "Останови"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "все"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "таймеры"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

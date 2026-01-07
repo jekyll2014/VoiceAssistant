@@ -1,0 +1,152 @@
+{
+  "CanNotClose": "не удалось закрыть",
+  "NotRunning": "не запущен",
+  "CanNotRun": "не удалось запустить",
+  "AlreadyRunning": "уже запущен",
+  "Commands": [
+    {
+      "Response": "Яндекс запущен",
+      "URL": "www.yandex.ru",
+      "isStopCommand": false,
+      "useStandAloneBrowser": true,
+      "Name": "Run Yandex",
+      "Tokens": [
+        {
+          "Value": [
+            "запусти",
+            "открой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "яндекс"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Яндекс закрыт",
+      "URL": "www.yandex.ru",
+      "isStopCommand": true,
+      "useStandAloneBrowser": true,
+      "Name": "Stop Yandex",
+      "Tokens": [
+        {
+          "Value": [
+            "останови",
+            "закрой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "яндекс"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Гугл запущен",
+      "URL": "www.google.com",
+      "isStopCommand": false,
+      "useStandAloneBrowser": false,
+      "Name": "Run Google",
+      "Tokens": [
+        {
+          "Value": [
+            "запусти",
+            "открой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "гугл"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Гугл закрыт",
+      "URL": "www.google.com",
+      "isStopCommand": true,
+      "useStandAloneBrowser": false,
+      "Name": "Stop Google",
+      "Tokens": [
+        {
+          "Value": [
+            "останови",
+            "закрой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "гугл"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Кинопоиск запущен",
+      "URL": "www.kinopoisk.ru",
+      "isStopCommand": false,
+      "useStandAloneBrowser": false,
+      "Name": "Run Kinopoisk",
+      "Tokens": [
+        {
+          "Value": [
+            "запусти",
+            "открой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "кинопоиск"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Кинопоиск закрыт",
+      "URL": "www.kinopoisk.ru",
+      "isStopCommand": true,
+      "useStandAloneBrowser": false,
+      "Name": "Stop Kinopoisk",
+      "Tokens": [
+        {
+          "Value": [
+            "останови",
+            "закрой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "кинопоиск"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

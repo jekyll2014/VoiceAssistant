@@ -2,19 +2,21 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 using FuzzySharp;
 
+using PluginInterface.Interfaces;
+
 using System.Collections.Generic;
 
-namespace PluginInterface
+namespace PluginInterface.Converters.Rus
 {
     public class TextToNumberRus : ITextToNumber
     {
-        private readonly Dictionary<string, bool> Signs = new Dictionary<string, bool>
+        private readonly Dictionary<string, bool> _signs = new()
         {
             {"минус", false},
             {"плюс", true}
         };
 
-        private readonly Dictionary<string, long> Numbers = new Dictionary<string, long>
+        private readonly Dictionary<string, long> _numbers = new()
         {
             {"ноль", 0},
             {"один", 1},
@@ -63,7 +65,7 @@ namespace PluginInterface
             {"квадриллион", 1000000000000},
         };
 
-        private readonly Dictionary<string, long> Multipliers = new Dictionary<string, long>
+        private readonly Dictionary<string, long> _multipliers = new()
         {
             {"тысяча", 1000},
             {"тысячи", 1000},
@@ -93,17 +95,17 @@ namespace PluginInterface
             var i = 0;
             var tokens = numberString.ToLower().Split(' ');
 
-            if (TryGetValueFuzz(Signs, tokens[0], ratio, out var p))
+            if (TryGetValueFuzz(_signs, tokens[0], ratio, out var p))
             {
                 positive = p;
                 i++;
             }
 
             for (; i < tokens.Length; i++)
-                if (TryGetValueFuzz(Numbers, tokens[i], ratio, out var number))
+                if (TryGetValueFuzz(_numbers, tokens[i], ratio, out var number))
                 {
                     if (i + 1 < tokens.Length &&
-                        TryGetValueFuzz(Multipliers, tokens[i + 1], ratio, out var multiplier))
+                        TryGetValueFuzz(_multipliers, tokens[i + 1], ratio, out var multiplier))
                     {
                         number *= multiplier;
                         i++;

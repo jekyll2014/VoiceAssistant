@@ -1,15 +1,17 @@
 // This is an independent project of an individual developer. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using PluginInterface.Interfaces;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PluginInterface
+namespace PluginInterface.Converters.Eng
 {
-    class TextToNumberEng : ITextToNumber
+    partial class TextToNumberEng : ITextToNumber
     {
-        private readonly Dictionary<string, long> numberTable = new Dictionary<string, long>
+        private readonly Dictionary<string, long> _numberTable = new()
         {
             {"zero",0},
             {"one",1},
@@ -51,10 +53,10 @@ namespace PluginInterface
 
         public long ConvertStringToNumber(string numberString, int ratio = 100)
         {
-            var numbers = Regex.Matches(numberString, @"\w+").Cast<Match>()
+            var numbers = MyRegex().Matches(numberString)
                     .Select(m => m.Value.ToLowerInvariant())
-                    .Where(v => numberTable.ContainsKey(v))
-                    .Select(v => numberTable[v]);
+                    .Where(v => _numberTable.ContainsKey(v))
+                    .Select(v => _numberTable[v]);
 
             long acc = 0, total = 0;
 
@@ -69,11 +71,15 @@ namespace PluginInterface
                 {
                     acc *= n;
                 }
-                else acc += n;
+                else
+                    acc += n;
             }
 
             return (total + acc) * (numberString.StartsWith("minus",
                     StringComparison.InvariantCultureIgnoreCase) ? -1 : 1);
         }
+
+        [GeneratedRegex(@"\w+")]
+        private static partial Regex MyRegex();
     }
 }

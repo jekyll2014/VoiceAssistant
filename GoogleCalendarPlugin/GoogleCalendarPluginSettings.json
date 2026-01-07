@@ -1,0 +1,166 @@
+{
+  "ConfigurationNote": [
+    "Interpolation macros:",
+    "Only for \"SingleEventMessage\":",
+    "{Attendees} - list of attendees",
+    "{Description} - event description",
+    "{Location} - event location",
+    "{Summary} - event summary",
+    "{Length} - event duration",
+    "{StartYear} - event start year",
+    "{StartMonth} - event start month",
+    "{StartDay} - event start day",
+    "{StarDate} - event start day and month",
+    "{StarTime} - event start hour and minute",
+    "{EndYear} - event end year",
+    "{EndMonth} - event end month",
+    "{EndDay} - event end day",
+    "{EndDate} - event end day and month",
+    "{EndTime} - event end hour and minute",
+    "",
+    "Only for \"Response\":",
+    "{1} - use SingleEventMessage sample"
+  ],
+  "Commands": [
+    {
+      "SingleEventMessage": "{StarTime} - {Summary}",
+      "Response": "Расписание на сегодня: {1}",
+      "CalendarId": "",
+      "DaysStart": 0,
+      "DaysCount": 1,
+      "MaxEvents": 10,
+      "Name": "Today's events",
+      "Tokens": [
+        {
+          "Value": [
+            "Календарь",
+            "События",
+            "Расписание"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "сегодня"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "SingleEventMessage": "{StarTime} - {Summary}",
+      "Response": "Расписание на завтра: {1}",
+      "CalendarId": "",
+      "DaysStart": 1,
+      "DaysCount": 1,
+      "MaxEvents": 10,
+      "Name": "Tomorrow's events",
+      "Tokens": [
+        {
+          "Value": [
+            "Календарь",
+            "События",
+            "Расписание"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "завтра"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "SingleEventMessage": "{Summary}",
+      "Response": "Дни рождения на сегодня: {1}",
+      "CalendarId": "addressbook#contacts@group.v.calendar.google.com",
+      "DaysStart": 0,
+      "DaysCount": 1,
+      "MaxEvents": 10,
+      "Name": "Today's birthdays",
+      "Tokens": [
+        {
+          "Value": [
+            "Дни"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "рождения"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "сегодня"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "SingleEventMessage": "{StarDate} - {Summary}",
+      "Response": "Приближающиеся дни рождения: {1}",
+      "CalendarId": "addressbook#contacts@group.v.calendar.google.com",
+      "DaysStart": 0,
+      "DaysCount": 7,
+      "MaxEvents": 10,
+      "Name": "Upcoming birthdays",
+      "Tokens": [
+        {
+          "Value": [
+            "Ближайшие"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "дни"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "рождения"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ],
+  "MoreResultsAvailableMessage": "и дальнейшие события, не вошедшие в список"
+}

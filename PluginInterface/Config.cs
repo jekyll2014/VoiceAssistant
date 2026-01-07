@@ -28,7 +28,7 @@ namespace PluginInterface
 
             try
             {
-                var json = JObject.Parse(File.ReadAllText(_configFileName));
+                var json = JContainer.Parse(File.ReadAllText(_configFileName));
                 ConfigStorage = GetSection<T>(json, "");
             }
             catch
@@ -39,7 +39,7 @@ namespace PluginInterface
             return true;
         }
 
-        public TK GetSection<TK>(JObject json, string sectionName = null) where TK : class, new()
+        public TK GetSection<TK>(JToken json, string sectionName = null) where TK : class, new()
         {
             if (string.IsNullOrEmpty(_configFileName))
                 return default;

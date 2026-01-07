@@ -1,8 +1,10 @@
 ﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using PluginInterface.Interfaces;
+
 using System;
 
-namespace PluginInterface
+namespace PluginInterface.Converters.Eng
 {
     public class NumberToTextEng : INumberToText
     {
@@ -37,10 +39,10 @@ namespace PluginInterface
                 result += ConvertBigNumberToString(val, (long)1e12, "trillion");
             else if (val < 1e18)
                 result += ConvertBigNumberToString(val, (long)1e15, "quadrillion");
-            else if (val < 1e21)
+            else //if (val < 1e21)
                 result += ConvertBigNumberToString(val, (long)1e18, "quintillion");
-            else
-                return "more than quintillion";
+            //else
+            //    return "more than quintillion";
 
             return result;
         }
@@ -60,7 +62,7 @@ namespace PluginInterface
                 case 8: return "eight";
                 case 9: return "nine";
                 default:
-                    throw new IndexOutOfRangeException(String.Format("{0} not a digit", i));
+                    throw new IndexOutOfRangeException(string.Format("{0} not a digit", i));
             }
         }
 
@@ -80,14 +82,14 @@ namespace PluginInterface
                 case 18: return "eighteen";
                 case 19: return "nineteen";
                 default:
-                    throw new IndexOutOfRangeException(String.Format("{0} not a teen", n));
+                    throw new IndexOutOfRangeException(string.Format("{0} not a teen", n));
             }
         }
 
         //assumes a number between 20 and 99
         private string ConvertHighTensToString(long n)
         {
-            long tensDigit = (long)(Math.Floor((double)n / 10.0));
+            var tensDigit = (long)Math.Floor(n / 10.0);
 
             string tensStr;
             switch (tensDigit)
@@ -101,10 +103,10 @@ namespace PluginInterface
                 case 8: tensStr = "eighty"; break;
                 case 9: tensStr = "ninety"; break;
                 default:
-                    throw new IndexOutOfRangeException(String.Format("{0} not in range 20-99", n));
+                    throw new IndexOutOfRangeException(string.Format("{0} not in range 20-99", n));
             }
             if (n % 10 == 0) return tensStr;
-            string onesStr = ConvertDigitToString(n - tensDigit * 10);
+            var onesStr = ConvertDigitToString(n - tensDigit * 10);
             return tensStr + "-" + onesStr;
         }
 
@@ -112,16 +114,16 @@ namespace PluginInterface
         private string ConvertBigNumberToString(long n, long baseNum, string baseNumStr)
         {
             // special case: use commas to separate portions of the number, unless we are in the hundreds
-            string separator = (baseNumStr != "hundred") ? ", " : " ";
+            var separator = baseNumStr != "hundred" ? ", " : " ";
 
             // Strategy: translate the first portion of the number, then recursively translate the remaining sections.
             // Step 1: strip off first portion, and convert it to string:
-            long bigPart = (long)(Math.Floor((double)n / baseNum));
-            string bigPartStr = ConvertNumberToString(bigPart) + " " + baseNumStr;
+            var bigPart = (long)Math.Floor((double)n / baseNum);
+            var bigPartStr = ConvertNumberToString(bigPart) + " " + baseNumStr;
             // Step 2: check to see whether we're done:
             if (n % baseNum == 0) return bigPartStr;
             // Step 3: concatenate 1st part of string with recursively generated remainder:
-            long restOfNumber = n - bigPart * baseNum;
+            var restOfNumber = n - bigPart * baseNum;
             return bigPartStr + separator + ConvertNumberToString(restOfNumber);
         }
     }

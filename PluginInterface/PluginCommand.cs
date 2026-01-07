@@ -8,8 +8,8 @@ namespace PluginInterface
 {
     public class PluginCommand
     {
-        public string Name;
-        public Token[] Tokens;
+        public string Name { get; set; }
+        public Token[] Tokens { get; set; }
 
         public Token GetParameter(string paramName, IEnumerable<Token> tokens)
         {
@@ -30,7 +30,7 @@ namespace PluginInterface
                 {
                     if (sb.Length > 0)
                     {
-                        sb.Append(" ");
+                        sb.Append(' ');
                     }
 
                     if (token.Length == 1)
@@ -39,7 +39,7 @@ namespace PluginInterface
                     }
                     else
                     {
-                        sb.Append("[");
+                        sb.Append('[');
                         var nextElement = false;
 
                         foreach (var word in token)
@@ -53,26 +53,12 @@ namespace PluginInterface
                             nextElement = true;
                         }
 
-                        sb.Append("]");
+                        sb.Append(']');
                     }
                 }
             }
 
             return sb.ToString().Trim();
         }
-    }
-
-    public class Token
-    {
-        public string[] Value;
-        public TokenType Type = TokenType.Unknown;
-        public int SuccessRate = 100; // success ratio for fuzzy compare
-    }
-
-    public enum TokenType
-    {
-        Unknown,
-        Command,
-        Parameter
     }
 }

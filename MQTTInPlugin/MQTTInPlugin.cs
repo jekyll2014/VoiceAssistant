@@ -6,6 +6,7 @@ using MQTTnet.Diagnostics;
 using MQTTnet.Implementations;
 
 using PluginInterface;
+using PluginInterface.Interfaces;
 
 using System;
 using System.Collections.Generic;

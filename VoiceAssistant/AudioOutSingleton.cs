@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 using NAudio.Wave;
 
-using PluginInterface;
+using PluginInterface.Interfaces;
 
 using System.Globalization;
 using System.IO;
@@ -22,7 +22,7 @@ namespace VoiceAssistant
         private readonly int _sampleRate;
         private readonly string _speakerLanguage;
 
-        protected AudioOutSingleton(string speakerLanguage, SpeechSynthesizer synthesizer, PromptBuilder promptBuilder,
+        private AudioOutSingleton(string speakerLanguage, SpeechSynthesizer synthesizer, PromptBuilder promptBuilder,
             WaveOut waveOut, int sampleRate)
         {
             _speakerLanguage = speakerLanguage;

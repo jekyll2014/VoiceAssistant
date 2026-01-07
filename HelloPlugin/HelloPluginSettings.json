@@ -1,0 +1,65 @@
+{
+  "Commands": [
+    {
+      "Response": "И тебе привет",
+      "Name": "Greeting informal",
+      "Tokens": [
+        {
+          "Value": [
+            "привет"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "И тебе не болеть",
+      "Name": "Greeting formal",
+      "Tokens": [
+        {
+          "Value": [
+            "Здравствуй"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "И тебе доброго дня",
+      "Name": "Greeting wishing",
+      "Tokens": [
+        {
+          "Value": [
+            "Доброго",
+            "Добрый"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "дня",
+            "день"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Хаюшки",
+      "Name": "Greeting short informal",
+      "Tokens": [
+        {
+          "Value": [
+            "Хай"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "ConfigurationNote": [
+    "Interpolation macros:",
+    "Only for \"Now\" commands:",
+    "{WeatherDescription} - weather description",
+    "{Temperature} - temperature",
+    "{Humidity} - humidity, %",
+    "{Pressure} - pressure, hPa",
+    "{WindSpeed} - wind speed",
+    "{WindDirection} - wind direction, degree",
+    "{WindDirectionName} - wind direction name",
+    "{Clouds} - cloudiness, %",
+    "",
+    "Only for \"Today\" and \"Tomorrow\" commands:",
+    "{MorningPhrase} - use MorningPhrase sample",
+    "{DayPhrase} - use DayPhrase sample",
+    "{EveningPhrase} - use EveningPhrase sample",
+    "{NightPhrase} - use NightPhrase sample",
+    "",
+    "Only for \"Morning/Day/Evening/Night\" phrases:",
+    "{WeatherDescription} - weather description",
+    "{Temperature} - average temperature",
+    "{MinTemperature} - min. temperature",
+    "{MaxTemperature} - max. temperature",
+    "{Humidity} - average humidity, %",
+    "{MinHumidity} - min. humidity, %",
+    "{MaxHumidity} - max. humidity, %",
+    "{Pressure} - average pressure, hPa",
+    "{MinPressure} - min. pressure, hPa",
+    "{MaxPressure} - max. pressure, hPa",
+    "{WindSpeed} - average wind speed",
+    "{MinWindSpeed} - min. wind speed",
+    "{MaxWindSpeed} - max. wind speed",
+    "{WindDirection} - average wind direction, degree",
+    "{MinWindDirection} - min. wind direction, degree",
+    "{MaxWindDirection} - max. wind direction, degree",
+    "{WindDirectionName} - average wind direction name",
+    "{MinWindDirectionName} - min. wind direction name",
+    "{MaxWindDirectionName} - max. wind direction name",
+    "{Clouds} - average cloudiness, %",
+    "{MinClouds} - min. cloudiness, %",
+    "{MaxClouds} - max. cloudiness, %"
+  ],
+  "ApiKey": "",
+  "WindDirections": [
+    {
+      "Item1": "Северный",
+      "Item2": 23
+    },
+    {
+      "Item1": "Северо-восточный",
+      "Item2": 68
+    },
+    {
+      "Item1": "Восточный",
+      "Item2": 113
+    },
+    {
+      "Item1": "Юго-восточный",
+      "Item2": 158
+    },
+    {
+      "Item1": "Южный",
+      "Item2": 203
+    },
+    {
+      "Item1": "Юго-западный",
+      "Item2": 248
+    },
+    {
+      "Item1": "Западный",
+      "Item2": 293
+    },
+    {
+      "Item1": "Северо-западный",
+      "Item2": 338
+    },
+    {
+      "Item1": "Северный",
+      "Item2": 361
+    }
+  ],
+  "WeatherCurrentQuery": "https://api.openweathermap.org/data/2.5/weather?q={2}&appid={1}&units=metric&lang=ru",
+  "WeatherForecastQuery": "https://api.openweathermap.org/data/2.5/forecast?q={2}&appid={1}&units=metric&lang=ru",
+  "MorningPhrase": "Утром {WeatherDescription}, температура от {MinTemperature} до {MaxTemperature} градусов, влажность {Humidity} процентов, ветер {WindDirectionName} {WindSpeed} метров в секунду",
+  "DayPhrase": "Днем {WeatherDescription}, температура от {MinTemperature} до {MaxTemperature} градусов, влажность {Humidity} процентов, ветер {WindDirectionName} {WindSpeed} метров в секунду",
+  "EveningPhrase": "Вечером {WeatherDescription}, температура от {MinTemperature} до {MaxTemperature} градусов, влажность {Humidity} процентов, ветер {WindDirectionName} {WindSpeed} метров в секунду",
+  "NightPhrase": "Ночью {WeatherDescription}, температура от {MinTemperature} до {MaxTemperature} градусов, влажность {Humidity} процентов, ветер {WindDirectionName} {WindSpeed} метров в секунду",
+  "MorningStartHour": 7,
+  "DayStartHour": 10,
+  "EveningStartHour": 18,
+  "NightStartHour": 22,
+  "Commands": [
+    {
+      "DayTime": "Now",
+      "CityId": "Tashkent,uz",
+      "Response": "В Ташкенте сейчас {WeatherDescription}, температура {Temperature} градусов, влажность {Humidity} процентов, ветер {WindDirectionName}, {WindSpeed} метров в секунду",
+      "Name": "Short weather now",
+      "Tokens": [
+        {
+          "Value": [
+            "какая"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "сейчас"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "погода"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Today",
+      "CityId": "Tashkent,uz",
+      "Response": "В Ташкенте сегодня {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Short weather today",
+      "Tokens": [
+        {
+          "Value": [
+            "какая"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "сегодня"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "погода"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Tomorrow",
+      "CityId": "Tashkent,uz",
+      "Response": "В Ташкенте завтра {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Short weather tomorrow",
+      "Tokens": [
+        {
+          "Value": [
+            "какая"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "завтра"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "погода"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Now",
+      "CityId": "Moscow,ru",
+      "Response": "В Москве сейчас {WeatherDescription}, температура {Temperature} градусов, влажность {Humidity} процентов, ветер {WindDirectionName}, {WindSpeed} метров в секунду",
+      "Name": "Moscow weather now",
+      "Tokens": [
+        {
+          "Value": [
+            "какая"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "сейчас"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "погода"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "в"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "Москве"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Today",
+      "CityId": "Moscow,ru",
+      "Response": "В Москве сегодня {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Moscow weather today",
+      "Tokens": [
+        {
+          "Value": [
+            "какая"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "сегодня"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "погода"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "в"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "Москве"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "DayTime": "Tomorrow",
+      "CityId": "Moscow,ru",
+      "Response": "В Москве завтра {MorningPhrase}, {DayPhrase}, {EveningPhrase}, {NightPhrase}",
+      "Name": "Moscow weather tomorrow",
+      "Tokens": [
+        {
+          "Value": [
+            "какая"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "завтра"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "погода"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "в"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "Москве"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

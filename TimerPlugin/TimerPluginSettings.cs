@@ -6,7 +6,7 @@ namespace TimerPlugin
 {
     public class TimerPluginSettings
     {
-        public string[] ConfigurationNote = 
+        public string[] ConfigurationNote =
         {
             "Available parameters:",
             "%minutes% - minutes",

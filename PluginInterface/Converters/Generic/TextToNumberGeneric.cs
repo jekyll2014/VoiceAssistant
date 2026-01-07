@@ -2,36 +2,38 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 using FuzzySharp;
 
+using PluginInterface.Interfaces;
+
 using System.Collections.Generic;
 using System.IO;
 
-namespace PluginInterface
+namespace PluginInterface.Converters.Generic
 {
     class TextToNumberGeneric : ITextToNumber
     {
-        private const string _settingsConfigFile = "GenericNumberSettings.json";
+        private const string SettingsConfigFile = "GenericNumberSettings.json";
 
-        private readonly Dictionary<string, bool> Signs;
-        private readonly Dictionary<string, long> Numbers;
-        private readonly Dictionary<string, long> Multipliers;
+        private readonly Dictionary<string, bool> _signs;
+        private readonly Dictionary<string, long> _numbers;
+        private readonly Dictionary<string, long> _multipliers;
 
         public TextToNumberGeneric()
         {
-            var configBuilder = new Config<GenericNumberSettings>($"{_settingsConfigFile}");
-            if (!File.Exists($"{_settingsConfigFile}"))
+            var configBuilder = new Config<GenericNumberSettings>($"{SettingsConfigFile}");
+            if (!File.Exists($"{SettingsConfigFile}"))
             {
                 configBuilder.SaveConfig();
             }
 
             var configStorage = configBuilder.ConfigStorage;
 
-            Signs = new Dictionary<string, bool>
+            _signs = new Dictionary<string, bool>
              {
                  {configStorage.Minus, false},
                  {configStorage.Plus, true}
              };
 
-            Numbers = new Dictionary<string, long>
+            _numbers = new Dictionary<string, long>
             {
                 {configStorage.Zero, 0},
                 {configStorage.One, 1},
@@ -79,7 +81,7 @@ namespace PluginInterface
                 {configStorage.OneQuadrillion, 1000000000000},
             };
 
-            Multipliers = new Dictionary<string, long>
+            _multipliers = new Dictionary<string, long>
             {
                 {configStorage.OneThousand, 1000},
                 {configStorage.TwoThousand, 1000},
@@ -110,17 +112,17 @@ namespace PluginInterface
             var i = 0;
             var tokens = numberString.ToLower().Split(' ');
 
-            if (TryGetValueFuzz(Signs, tokens[0], ratio, out var p))
+            if (TryGetValueFuzz(_signs, tokens[0], ratio, out var p))
             {
                 positive = p;
                 i++;
             }
 
             for (; i < tokens.Length; i++)
-                if (TryGetValueFuzz(Numbers, tokens[i], ratio, out var number))
+                if (TryGetValueFuzz(_numbers, tokens[i], ratio, out var number))
                 {
                     if (i + 1 < tokens.Length &&
-                        TryGetValueFuzz(Multipliers, tokens[i + 1], ratio, out var multiplier))
+                        TryGetValueFuzz(_multipliers, tokens[i + 1], ratio, out var multiplier))
                     {
                         number *= multiplier;
                         i++;

@@ -1,26 +1,32 @@
 ﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using PluginInterface;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using PluginInterface;
 
 namespace VoiceAssistant
 {
     public class ProcessingCommand
     {
-        public string PluginName;
-        public PluginCommand ExpectedCommand;
-        public List<Token> CommandTokens = new();
+        public string PluginName { get; }
+        public PluginCommand ExpectedCommand { get; }
+        public readonly List<Token> CommandTokens = new();
+
+        public ProcessingCommand(string pluginName, PluginCommand expectedCommand)
+        {
+            PluginName = pluginName;
+            ExpectedCommand = expectedCommand;
+        }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Plugin: {PluginName}");
-            sb.AppendLine($"  Command name: {ExpectedCommand.Name}");
-            sb.AppendLine($"    Expected phrase: {ExpectedCommand.ToString()}");
-            sb.AppendLine($"    Assembled phrase: {CommandTokensToString()}");
+            sb.AppendLine($"\tCommand name: {ExpectedCommand.Name}");
+            sb.AppendLine($"\t\tExpected phrase: {ExpectedCommand.ToString()}");
+            sb.AppendLine($"\t\tAssembled phrase: {CommandTokensToString()}");
 
             return sb.ToString();
         }

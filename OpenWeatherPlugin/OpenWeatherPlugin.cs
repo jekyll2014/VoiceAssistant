@@ -3,13 +3,14 @@
 using Newtonsoft.Json;
 
 using PluginInterface;
+using PluginInterface.Interfaces;
+using PluginInterface.Tools;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 
 namespace OpenWeatherPlugin
 {

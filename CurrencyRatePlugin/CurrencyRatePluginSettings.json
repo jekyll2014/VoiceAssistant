@@ -1,0 +1,108 @@
+{
+  "CurrencyServiceUrl": "http://www.cbr.ru/scripts/XML_daily.asp",
+  "CurrencyDecimalSeparatorWord": "точка",
+  "Commands": [
+    {
+      "CurencyCode": "USD",
+      "RateDecimalRound": 1,
+      "Response": "{1} доллар равен {2} рублей",
+      "Name": "Short USD request",
+      "Tokens": [
+        {
+          "Value": [
+            "курс"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "доллара"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "CurencyCode": "USD",
+      "RateDecimalRound": 1,
+      "Response": "{1} доллар равен {2} рублей",
+      "Name": "Long USD request",
+      "Tokens": [
+        {
+          "Value": [
+            "какой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "курс"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "доллара"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "CurencyCode": "EUR",
+      "RateDecimalRound": 1,
+      "Response": "{1} евро равен {2} рублей",
+      "Name": "Short EUR request",
+      "Tokens": [
+        {
+          "Value": [
+            "курс"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "евро"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "CurencyCode": "EUR",
+      "RateDecimalRound": 1,
+      "Response": "{1} евро равен {2} рублей",
+      "Name": "Long EUR request",
+      "Tokens": [
+        {
+          "Value": [
+            "какой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "курс"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "евро"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

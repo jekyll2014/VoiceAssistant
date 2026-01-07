@@ -7,6 +7,8 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 
 using PluginInterface;
+using PluginInterface.Interfaces;
+using PluginInterface.Tools;
 
 using System;
 using System.Collections.Generic;

@@ -1,14 +1,17 @@
 ﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+using PluginInterface.Interfaces;
+
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace PluginInterface
+namespace PluginInterface.Converters.Generic
 {
     public class NumberToTextGeneric : INumberToText
     {
-        private const string _settingsConfigFile = "GenericNumberSettings.json";
+        private const string SettingsConfigFile = "GenericNumberSettings.json";
 
         private readonly string _zero;
         private readonly string _oneFemale;
@@ -17,16 +20,16 @@ namespace PluginInterface
         private readonly string[] _frac20;
         private readonly string[] _hundreds;
         private readonly string[] _tens;
-        private readonly string[] _OneTwoFiveThousand;
-        private readonly string[] _OneTwoFiveMillion;
-        private readonly string[] _OneTwoFiveBillion;
-        private readonly string[] _OneTwoFiveTrillion;
-        private readonly string[] _OneTwoFiveQuadrillion;
+        private readonly string[] _oneTwoFiveThousand;
+        private readonly string[] _oneTwoFiveMillion;
+        private readonly string[] _oneTwoFiveBillion;
+        private readonly string[] _oneTwoFiveTrillion;
+        private readonly string[] _oneTwoFiveQuadrillion;
 
         public NumberToTextGeneric()
         {
-            var configBuilder = new Config<GenericNumberSettings>($"{_settingsConfigFile}");
-            if (!File.Exists($"{_settingsConfigFile}"))
+            var configBuilder = new Config<GenericNumberSettings>($"{SettingsConfigFile}");
+            if (!File.Exists($"{SettingsConfigFile}"))
             {
                 configBuilder.SaveConfig();
             }
@@ -38,8 +41,8 @@ namespace PluginInterface
             _oneFemale = configStorage.OneFemale;
             _twoFemale = configStorage.TwoFemale;
 
-            _frac20 = new[]
-            {
+            _frac20 =
+            [
                 "",
                 configStorage.One,
                 configStorage.Two,
@@ -59,11 +62,11 @@ namespace PluginInterface
                 configStorage.Sixteen,
                 configStorage.Seventeen,
                 configStorage.Eighteen,
-                configStorage.Nineteen,
-            };
+                configStorage.Nineteen
+            ];
 
-            _tens = new[]
-            {
+            _tens =
+            [
                 "",
                 configStorage.Ten,
                 configStorage.Twenty,
@@ -74,10 +77,10 @@ namespace PluginInterface
                 configStorage.Seventy,
                 configStorage.Eighty,
                 configStorage.Ninety
-            };
+            ];
 
-            _hundreds = new[]
-            {
+            _hundreds =
+            [
                 "",
                 configStorage.OneHundred,
                 configStorage.TwoHundred,
@@ -87,43 +90,43 @@ namespace PluginInterface
                 configStorage.SixHundred,
                 configStorage.SevenHundred,
                 configStorage.EightHundred,
-                configStorage.NineHundred,
-            };
+                configStorage.NineHundred
+            ];
 
-            _OneTwoFiveThousand = new[]
-            {
+            _oneTwoFiveThousand =
+            [
                 configStorage.OneThousand,
                 configStorage.TwoThousand,
                 configStorage.FiveThousand
-            };
+            ];
 
-            _OneTwoFiveMillion = new[]
-            {
+            _oneTwoFiveMillion =
+            [
                 configStorage.OneMillion,
                 configStorage.TwoMillion,
                 configStorage.FiveMillion
-            };
+            ];
 
-            _OneTwoFiveBillion = new[]
-            {
+            _oneTwoFiveBillion =
+            [
                 configStorage.OneBillion,
                 configStorage.TwoBillion,
                 configStorage.FiveBillion
-            };
+            ];
 
-            _OneTwoFiveTrillion = new[]
-            {
+            _oneTwoFiveTrillion =
+            [
                 configStorage.OneTrillion,
                 configStorage.TwoTrillion,
                 configStorage.FiveTrillion
-            };
+            ];
 
-            _OneTwoFiveQuadrillion = new[]
-            {
+            _oneTwoFiveQuadrillion =
+            [
                 configStorage.OneQuadrillion,
                 configStorage.TwoQuadrillion,
                 configStorage.FiveQuadrillion
-            };
+            ];
         }
 
         /// <summary>
@@ -149,23 +152,23 @@ namespace PluginInterface
                 r.Append(_zero);
 
             if (n % 1000 != 0)
-                r.Append(Str(n, true, new[] { "", "", "" }));
+                r.Append(Str(n, true, ["", "", ""]));
 
             n /= 1000;
 
-            r.Insert(0, Str(n, false, _OneTwoFiveThousand));
+            r.Insert(0, Str(n, false, _oneTwoFiveThousand));
             n /= 1000;
 
-            r.Insert(0, Str(n, true, _OneTwoFiveMillion));
+            r.Insert(0, Str(n, true, _oneTwoFiveMillion));
             n /= 1000;
 
-            r.Insert(0, Str(n, true, _OneTwoFiveBillion));
+            r.Insert(0, Str(n, true, _oneTwoFiveBillion));
             n /= 1000;
 
-            r.Insert(0, Str(n, true, _OneTwoFiveTrillion));
+            r.Insert(0, Str(n, true, _oneTwoFiveTrillion));
             n /= 1000;
 
-            r.Insert(0, Str(n, true, _OneTwoFiveQuadrillion));
+            r.Insert(0, Str(n, true, _oneTwoFiveQuadrillion));
 
             if (minus)
                 r.Insert(0, _minus);
@@ -178,14 +181,16 @@ namespace PluginInterface
         /// </summary>
         /// <param name="val">Число</param>
         /// <param name="male">Род существительного, которое относится к числу</param>
-        /// <param name="one">Форма существительного в единственном числе</param>
-        /// <param name="two">Форма существительного от двух до четырёх</param>
-        /// <param name="five">Форма существительного от пяти и больше</param>
+        /// <param name="oneTwoFive"> Array of word forms:
+        /// форма существительного в единственном числе,
+        /// форма существительного от двух до четырёх,
+        /// форма существительного от пяти и больше</param>
         /// <returns></returns>
-        private string Str(long val, bool male, string[] oneTwoFive)
+        private string Str(long val, bool male, IReadOnlyList<string> oneTwoFive)
         {
             var num = val % 1000;
-            if (0 == num) return "";
+            if (0 == num)
+                return "";
 
             if (num < 0) throw new ArgumentOutOfRangeException(nameof(val), "Parameter can't be less than zero");
 
@@ -210,7 +215,7 @@ namespace PluginInterface
             r.Append(Case(num, oneTwoFive[0], oneTwoFive[1], oneTwoFive[2]));
 
             if (r.Length != 0)
-                r.Append(" ");
+                r.Append(' ');
 
             return r.ToString();
         }

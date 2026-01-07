@@ -1,0 +1,187 @@
+{
+  "KeyNotFound": "Кнопка не найдена",
+  "ProcessNotFound": "Процесс не найден",
+  "Commands": [
+    {
+      "Response": "Перешел на следующий",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_NEXT"
+      ],
+      "Name": "MPC next",
+      "Tokens": [
+        {
+          "Value": [
+            "следующий"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "фильм"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Вернулся на предыдущий",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_PRIOR"
+      ],
+      "Name": "MPC previous",
+      "Tokens": [
+        {
+          "Value": [
+            "предыдущий"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "фильм"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "фильм запущен",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_SPACE"
+      ],
+      "Name": "MPC play",
+      "Tokens": [
+        {
+          "Value": [
+            "Запусти"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "фильм"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "фильм остановлен",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_DECIMAL"
+      ],
+      "Name": "MPC stop",
+      "Tokens": [
+        {
+          "Value": [
+            "Останови"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "фильм"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Пауза",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_SPACE"
+      ],
+      "Name": "MPC play/pause",
+      "Tokens": [
+        {
+          "Value": [
+            "фильм"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "на"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "паузу"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "сделал громче",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_UP",
+        "VK_UP",
+        "VK_UP",
+        "VK_UP"
+      ],
+      "Name": "MPC volume up",
+      "Tokens": [
+        {
+          "Value": [
+            "сделай"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "громче"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "сделал тише",
+      "ApplicationId": "mpc-hc64",
+      "KeyNames": [
+        "VK_DOWN",
+        "VK_DOWN",
+        "VK_DOWN",
+        "VK_DOWN"
+      ],
+      "Name": "MPC volume down",
+      "Tokens": [
+        {
+          "Value": [
+            "сделай"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "тише"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}

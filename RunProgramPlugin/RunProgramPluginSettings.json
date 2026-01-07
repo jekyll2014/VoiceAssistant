@@ -1,0 +1,118 @@
+{
+  "CanNotClose": "не удалось закрыть",
+  "NotRunning": "не запущен",
+  "CanNotRun": "не удалось запустить",
+  "AlreadyRunning": "уже запущен",
+  "Commands": [
+    {
+      "Response": "Вижуал студио код запущена",
+      "CommandLine": "code",
+      "IsStopCommand": false,
+      "AllowMultiple": true,
+      "Name": "Run VSCode",
+      "Tokens": [
+        {
+          "Value": [
+            "запусти",
+            "открой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "вес"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "код"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Вижуал студио код закрыт",
+      "CommandLine": "code",
+      "IsStopCommand": true,
+      "AllowMultiple": true,
+      "Name": "Stop VSCode",
+      "Tokens": [
+        {
+          "Value": [
+            "останови",
+            "закрой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "вес"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "код"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Блокнот запущен",
+      "CommandLine": "notepad++.exe",
+      "IsStopCommand": false,
+      "AllowMultiple": false,
+      "Name": "Run notepad++",
+      "Tokens": [
+        {
+          "Value": [
+            "запусти",
+            "открой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "блокнот"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    },
+    {
+      "Response": "Блокнот закрыт",
+      "CommandLine": "notepad++.exe",
+      "IsStopCommand": true,
+      "AllowMultiple": false,
+      "Name": "Stop notepad++",
+      "Tokens": [
+        {
+          "Value": [
+            "останови",
+            "закрой"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        },
+        {
+          "Value": [
+            "блокнот"
+          ],
+          "Type": "Command",
+          "SuccessRate": 90
+        }
+      ]
+    }
+  ]
+}
